@@ -1,0 +1,11 @@
+{
+  "module": {
+    "name": "htliang_oss",
+    "type": "har",
+    "deviceTypes": [
+      "default",
+      "tablet",
+      "2in1"
+    ]
+  }
+}
