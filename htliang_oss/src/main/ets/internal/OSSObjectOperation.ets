@@ -13,17 +13,18 @@ import IOUtils from '../common/utils/IOUtils';
 import ClientException from '../ClientException';
 import Mimetypes from './Mimetypes';
 import RepeatableFileInputStream from '../common/comm/io/RepeatableFileInputStream';
+import ResponseParser from '../common/parser/ResponseParser';
 
 export default class OSSObjectOperation extends OSSOperation {
   constructor(serviceClient: ServiceClient, credentialProvider: CredentialsProvider) {
     super(serviceClient, credentialProvider);
   }
 
-  public putObject(putObjectRequest: PutObjectRequest) {
+  public putObject(putObjectRequest: PutObjectRequest):PutObjectResult {
     CodingUtils.assertParameterNotNull(putObjectRequest, "putObjectRequest");
     let result: PutObjectResult | undefined = undefined;
     if (!OSSObjectOperation.isNeedReturnResponse(putObjectRequest)) {
-      return
+      return this.writeObjectInternal(WriteMode.OVERWRITE, putObjectRequest, )
     }
 
 
@@ -32,7 +33,7 @@ export default class OSSObjectOperation extends OSSOperation {
   public writeObjectInternal<RequestType extends PutObjectRequest, ResponseType>(
     mode: WriteMode,
     originalRequest: RequestType,
-    responseParser: (response: ESObject) => ResponseType
+    responseParser: ResponseParser<ResponseType>
   ): ResponseType {
     const bucketName = originalRequest.getBucketName() ?? CommonConstant.BLANK;
     const key = originalRequest.getKey() ?? CommonConstant.BLANK;

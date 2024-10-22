@@ -12,13 +12,13 @@ export default abstract class HttpMessage {
     return this._headers;
   }
 
-  private _content: Promise<fs.Stream> | undefined;
+  private _content: fs.Stream | undefined;
 
-  public set content(value: Promise<fs.Stream> | undefined) {
+  public set content(value: fs.Stream | undefined) {
     this._content = value;
   }
 
-  public get content(): Promise<fs.Stream> | undefined {
+  public get content(): fs.Stream | undefined {
     return this._content;
   }
 

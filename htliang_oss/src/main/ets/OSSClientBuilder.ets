@@ -34,10 +34,3 @@ export default class OSSClientBuilder implements  OSSBuilder {
   // }
 
 }
-
-
-
-function xx() {
-  let x = new OSSClientBuilder();
-  x.build(endpoint:"xx", accessKeyId:"xx")
-}

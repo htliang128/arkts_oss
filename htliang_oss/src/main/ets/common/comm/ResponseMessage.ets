@@ -1,18 +1,19 @@
 import OSSHeaders from '../../internal/OSSHeaders';
 import HttpMessage from './HttpMessage';
+import ServiceClient from './SeviceClient';
 
 export default class ResponseMessage extends HttpMessage {
   private static readonly HTTP_SUCCESS_STATUS_CODE: number = 200;
   private uri: string = '';
   private statusCode: number = -1;
-  // private request: ServiceClient.Request;
+  private request: ServiceClient.Request;
   // private httpResponse: CloseableHttpResponse | null;
   private errorResponseAsString: string = '';
 
-  // constructor(request: ServiceClient.Request) {
-  //   super();
-  //   this.request = request;
-  // }
+  constructor(request: ServiceClient.Request) {
+    super();
+    this.request = request;
+  }
 
   getUri(): string {
     return this.uri;
@@ -34,9 +35,9 @@ export default class ResponseMessage extends HttpMessage {
     return this.headers.get(OSSHeaders.OSS_HEADER_REQUEST_ID);
   }
 
-  // getRequest(): ServiceClient.Request {
-  //   return this.request;
-  // }
+  getRequest(): ServiceClient.Request {
+    return this.request;
+  }
 
   isSuccessful(): boolean {
     return Math.floor(this.statusCode / 100) === Math.floor(ResponseMessage.HTTP_SUCCESS_STATUS_CODE / 100);
