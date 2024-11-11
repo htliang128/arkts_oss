@@ -1,0 +1,11 @@
+{
+  "module": {
+    "name": "java_type",
+    "type": "har",
+    "deviceTypes": [
+      "default",
+      "tablet",
+      "2in1"
+    ]
+  }
+}

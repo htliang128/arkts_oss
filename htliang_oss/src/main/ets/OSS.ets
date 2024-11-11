@@ -15,7 +15,7 @@ export default interface OSS {
 
   putObject(request: PutObjectRequest): Promise<PutObjectResult>;
 
-  // putObject(bucketName: string, key: string, input: fs.ReadStream): Promise<PutObjectResult>;
+  putObject(bucketName: string, key: string, input: fs.ReadStream): Promise<PutObjectResult>;
 
   // putObject(bucketName: string, key: string, input: fs.ReadStream, metadata: ObjectMetadata): Promise<PutObjectResult>;
   //

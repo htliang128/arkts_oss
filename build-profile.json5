@@ -53,6 +53,10 @@
     {
       "name": "htliang_oss",
       "srcPath": "./htliang_oss",
+    },
+    {
+      "name": "java_type",
+      "srcPath": "./java_type",
     }
   ]
 }

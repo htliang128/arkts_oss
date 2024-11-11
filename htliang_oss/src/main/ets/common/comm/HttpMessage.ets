@@ -12,13 +12,13 @@ export default abstract class HttpMessage {
     return this._headers;
   }
 
-  private _content: fs.Stream | undefined;
+  private _content: string | ArrayBuffer | Uint8Array | undefined;
 
-  public set content(value: fs.Stream | undefined) {
+  public set content(value: string | ArrayBuffer | undefined) {
     this._content = value;
   }
 
-  public get content(): fs.Stream | undefined {
+  public get content(): string | ArrayBuffer | undefined {
     return this._content;
   }
 
