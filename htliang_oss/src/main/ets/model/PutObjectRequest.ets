@@ -1,22 +1,33 @@
+import InputStream from '@htliang/java_type/src/main/ets/java/io/InputStream';
 import fs from '@ohos.file.fs';
 import CallbackInfo from './CallbackInfo';
 import GenericRequest from './GenericRequest';
 import ObjectMetadata from './ObjectMetadata';
 
-export default class PutObjectRequest extends GenericRequest{
+export default class PutObjectRequest extends GenericRequest {
   file?: fs.File;
-  inputStream?: fs.ReadStream;
+  inputStream?: InputStream;
   metadata?: ObjectMetadata;
   callback?: CallbackInfo;
   process?: string;
   trafficLimit?: number;
 
-  constructor(bucketName: string, key: string, file: fs.File | undefined, inputStream: fs.ReadStream|undefined,
-    metadata?: ObjectMetadata) {
+  constructor(bucketName: string, key: string, file: fs.File);
+
+  constructor(bucketName: string, key: string, file: fs.File, metadata: ObjectMetadata);
+
+  constructor(bucketName: string, key: string, input: InputStream);
+
+  constructor(bucketName: string, key: string, input: InputStream, metadata: ObjectMetadata);
+
+  constructor(bucketName: string, key: string, input: fs.File | InputStream, metadata?: ObjectMetadata) {
     super(bucketName, key);
-    this.file = file;
-    this.inputStream = inputStream;
-    this.metadata = this.metadata;
+    this.metadata = metadata;
+    if (input instanceof InputStream) {
+      this.inputStream = input;
+    } else {
+      this.file = input;
+    }
   }
 
   getFile(): fs.File | undefined {
@@ -27,11 +38,11 @@ export default class PutObjectRequest extends GenericRequest{
     this.file = file;
   }
 
-  getInputStream(): fs.ReadStream | undefined {
+  getInputStream(): InputStream | undefined {
     return this.inputStream;
   }
 
-  setInputStream(inputStream: fs.ReadStream): void {
+  setInputStream(inputStream: InputStream): void {
     this.inputStream = inputStream;
   }
 

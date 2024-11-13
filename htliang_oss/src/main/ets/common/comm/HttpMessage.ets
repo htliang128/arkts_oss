@@ -1,5 +1,6 @@
 import fs from '@ohos.file.fs';
 import { TreeMap } from '@kit.ArkTS';
+import InputStream from '@htliang/java_type/src/main/ets/java/io/InputStream';
 
 export default abstract class HttpMessage {
   private _headers: TreeMap<string, string> = new TreeMap<string, string>();
@@ -12,13 +13,13 @@ export default abstract class HttpMessage {
     return this._headers;
   }
 
-  private _content: string | ArrayBuffer | Uint8Array | undefined;
+  private _content: InputStream | undefined;
 
-  public set content(value: string | ArrayBuffer | undefined) {
+  public set content(value: InputStream | undefined) {
     this._content = value;
   }
 
-  public get content(): string | ArrayBuffer | undefined {
+  public get content(): InputStream | undefined {
     return this._content;
   }
 

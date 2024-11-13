@@ -6,38 +6,37 @@ import { HttpMethod } from './HttpMethod';
 import RequestMessage from './RequestMessage';
 import ResponseMessage from './ResponseMessage';
 
-namespace ServiceClient {
-  export abstract class ServiceClient {
-    private clientConfiguration: ClientConfiguration;
+export abstract class ServiceClient {
+  private clientConfiguration: ClientConfiguration;
 
-    public getClientConfiguration(): ClientConfiguration {
-      return this.clientConfiguration;
-    }
-
-    constructor(clientConfiguration: ClientConfiguration) {
-      this.clientConfiguration = clientConfiguration;
-    }
-
-    //   public sendRequest(request: RequestMessage, context: ExecutionContext): ResponseMessage {
-    //
-    //     CodingUtils.assertParameterNotNull(request, "request");
-    //     CodingUtils.assertParameterNotNull(context, "context");
-    //
-    //     try {
-    //       return this.sendRequestImpl(request, context);
-    //     } finally {
-    //       // Close the request stream as well after the request is completed.
-    //       try {
-    //         request.close();
-    //       } catch (err) {
-    //         console.error(err)
-    //         throw new Error("Unexpected io exception when trying to close http request: "+ err)
-    //       }
-    //     }
-    //   }
+  public getClientConfiguration(): ClientConfiguration {
+    return this.clientConfiguration;
   }
 
+  constructor(clientConfiguration: ClientConfiguration) {
+    this.clientConfiguration = clientConfiguration;
+  }
 
+  //   public sendRequest(request: RequestMessage, context: ExecutionContext): ResponseMessage {
+  //
+  //     CodingUtils.assertParameterNotNull(request, "request");
+  //     CodingUtils.assertParameterNotNull(context, "context");
+  //
+  //     try {
+  //       return this.sendRequestImpl(request, context);
+  //     } finally {
+  //       // Close the request stream as well after the request is completed.
+  //       try {
+  //         request.close();
+  //       } catch (err) {
+  //         console.error(err)
+  //         throw new Error("Unexpected io exception when trying to close http request: "+ err)
+  //       }
+  //     }
+  //   }
+}
+
+export namespace ServiceClient {
   export class Request extends HttpMessage{
     private uri: string = '';
     private method: HttpMethod = HttpMethod.POST;
@@ -77,5 +76,3 @@ namespace ServiceClient {
     }
   }
 }
-
-export default ServiceClient;

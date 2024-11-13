@@ -6,6 +6,14 @@ class GenericRequest {
   private versionId?: string;
   private payer?: Payer;
 
+  constructor();
+
+  constructor(bucketName: string);
+
+  constructor(bucketName: string, key: string);
+
+  constructor(bucketName: string, key: string, versionId: string);
+
   constructor(bucketName?: string, key?: string, versionId?: string) {
     this.bucketName = bucketName;
     this.key = key;

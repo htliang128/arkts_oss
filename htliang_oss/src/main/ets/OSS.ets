@@ -3,6 +3,7 @@ import { SignVersion } from './common/comm/SignVersion';
 import fs from '@ohos.file.fs';
 import PutObjectResult from './model/PutObjectResult';
 import PutObjectRequest from './model/PutObjectRequest';
+import InputStream from '@htliang/java_type/src/main/ets/java/io/InputStream';
 
 export default interface OSS {
   switchCredentials(credentials: Credentials): void;
@@ -13,9 +14,9 @@ export default interface OSS {
 
   getConnectionPoolStats(): string;
 
-  putObject(request: PutObjectRequest): Promise<PutObjectResult>;
+  putObject(request: PutObjectRequest): PutObjectResult;
 
-  putObject(bucketName: string, key: string, input: fs.ReadStream): Promise<PutObjectResult>;
+  putObject(bucketName: string, key: string, input: InputStream): PutObjectResult;
 
   // putObject(bucketName: string, key: string, input: fs.ReadStream, metadata: ObjectMetadata): Promise<PutObjectResult>;
   //
