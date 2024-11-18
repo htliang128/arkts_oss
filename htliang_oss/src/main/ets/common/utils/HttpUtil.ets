@@ -1,5 +1,6 @@
 import StringUtils from './StringUtils';
 import util from '@ohos.util';
+import { TreeMap } from '@kit.ArkTS';
 
 export default class HttpUtil {
   private static readonly ENCODED_CHARACTERS_WITH_SLASHES: string[] = ["+", "*", "%7E", "%2F"];
@@ -92,15 +93,15 @@ export default class HttpUtil {
   private static readonly ISO_8859_1_CHARSET: string = "iso-8859-1";
   private static readonly UTF8_CHARSET: string = "utf-8";
 
-  public static convertHeaderCharsetFromIso88591(headers: Map<string, string>): void {
+  public static convertHeaderCharsetFromIso88591(headers: TreeMap<string, string>): void {
     HttpUtil.convertHeaderCharset(headers, HttpUtil.ISO_8859_1_CHARSET, HttpUtil.UTF8_CHARSET);
   }
 
-  public static convertHeaderCharsetToIso88591(headers: Map<string, string>): void {
+  public static convertHeaderCharsetToIso88591(headers: TreeMap<string, string>): void {
     HttpUtil.convertHeaderCharset(headers, HttpUtil.UTF8_CHARSET, HttpUtil.ISO_8859_1_CHARSET);
   }
 
-  private static convertHeaderCharset(headers: Map<string, string>, fromCharset: string, toCharset: string): void {
+  private static convertHeaderCharset(headers: TreeMap<string, string>, fromCharset: string, toCharset: string): void {
     headers.forEach((value, key) => {
       if (value == null) {
         return;

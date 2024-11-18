@@ -41,19 +41,13 @@ export default class FileInputStream extends InputStream {
   }
 
   public readBytes(b: Uint8Array, off: number = 0, len: number = b.length): number {
-    if (len === 0) {
-      return 0;
+    if (len === 0 || this.readPosition >= this.size) {
+      return -1;
     }
 
     if (len < 0 || len > b.length - off) {
       throw new IndexOutOfBoundsException();
     }
-
-    if (this.readPosition > this.size - 1) {
-      return 0;
-    }
-
-
 
     let readLen = -1;
     try {

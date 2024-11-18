@@ -3,6 +3,7 @@ import OSSErrorCode from "../../OSSErrorCode";
 import ServiceException from "../exceptions/ServiceException";
 
 export default class LogUtils {
+
   private static readonly NAME = 'oss';
   private static errorCodeFilterList: string[] = [
     OSSErrorCode.NO_SUCH_BUCKET,
@@ -13,8 +14,7 @@ export default class LogUtils {
     OSSErrorCode.NO_SUCH_LIFECYCLE,
   ]
 
-  public static logException(messagePrefix: string, e: ESObject, logEnabled: boolean = true) {
-    let ex = e as Error;
+  public static logException(messagePrefix: string, ex: Error, logEnabled: boolean = true) {
     let detailMessage = messagePrefix + ex.message;
     if (ex instanceof ServiceException && LogUtils.errorCodeFilterList.includes(ex.errorCode ?? '')) {
       if (logEnabled) {
@@ -25,5 +25,13 @@ export default class LogUtils {
     if (logEnabled) {
       hilog.warn(0x55, LogUtils.NAME, detailMessage);
     }
+  }
+
+  public static warn(detailMessage: string) {
+    hilog.debug(0x55, LogUtils.NAME, detailMessage);
+  }
+
+  static debug(detailMessage: string) {
+    hilog.debug(0x55, LogUtils.NAME, detailMessage);
   }
 }

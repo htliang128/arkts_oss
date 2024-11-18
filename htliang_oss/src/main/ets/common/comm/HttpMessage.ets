@@ -1,4 +1,3 @@
-import fs from '@ohos.file.fs';
 import { TreeMap } from '@kit.ArkTS';
 import InputStream from '@htliang/java_type/src/main/ets/java/io/InputStream';
 
@@ -38,9 +37,9 @@ export default abstract class HttpMessage {
   }
 
   close() {
-    if (this._content != null) {
-      // this.content.close();
-      // this.content = null;
+    if (this._content) {
+      this._content.close();
+      this._content = undefined;
     }
   }
 }

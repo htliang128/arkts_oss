@@ -1,7 +1,8 @@
+import RuntimeException from '@htliang/java_type/src/main/ets/java/lang/RuntimeException';
 import ClientErrorCode from './ClientErrorCode';
 import CommonConstant from './common/CommonConstant';
 
-export default class ClientException extends Error {
+export default class ClientException extends RuntimeException {
   errorMessage: string;
   requestId: string;
   errorCode: string;
@@ -44,7 +45,7 @@ export default class ClientException extends Error {
     }
 
     if (typeof arg1 !== 'string' && !arg2) {
-      super(arg1.message);
+      super(arg1);
       this.name = "ClientException";
       this.errorMessage = CommonConstant.BLANK;
       this.errorCode = ClientErrorCode.UNKNOWN;
@@ -56,7 +57,7 @@ export default class ClientException extends Error {
     }
 
     if (!arg3) {
-      super(arg1 as string);
+      super(arg1 as string, arg2 as Error);
       this.name = "ClientException";
       this.errorMessage = arg1 as string;
       this.errorCode = ClientErrorCode.UNKNOWN;
@@ -67,13 +68,24 @@ export default class ClientException extends Error {
       return;
     }
 
-
-    this.errorMessage = errorMessage;
-    this.requestId = requestId;
-    this.errorCode = errorCode;
-
-    this.message = `${errorMessage}
-    [ErrorCode]: ${errorCode ?? CommonConstant.BLANK}
-    [RequestId]: ${requestId ?? CommonConstant.BLANK}`
+    if (!arg4) {
+      super(arg1 as string);
+      this.name = "ClientException";
+      this.errorMessage = arg1 as string;
+      this.errorCode = arg2 as string;
+      this.requestId = arg3 as string;
+      this.message = `${this.errorMessage}
+    [ErrorCode]: ${this.errorCode ?? CommonConstant.BLANK}
+    [RequestId]: ${this.requestId ?? CommonConstant.BLANK}`
+      return;
+    }
+    super(arg1 as string, arg4);
+    this.name = "ClientException";
+    this.errorMessage = arg1 as string;
+    this.errorCode = arg2 as string;
+    this.requestId = arg3 as string;
+    this.message = `${this.errorMessage}
+    [ErrorCode]: ${this.errorCode ?? CommonConstant.BLANK}
+    [RequestId]: ${this.requestId ?? CommonConstant.BLANK}`
   }
 }

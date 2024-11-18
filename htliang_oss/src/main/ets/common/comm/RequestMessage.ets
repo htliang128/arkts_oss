@@ -120,4 +120,9 @@ export default class RequestMessage extends HttpMessage {
   public get originalRequest(): WebServiceRequest | undefined {
     return this._originalRequest;
   }
+
+  public  isRepeatable():boolean {
+    return this.content === undefined || this.content.markSupported();
+  }
+
 }

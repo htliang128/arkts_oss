@@ -1,4 +1,6 @@
-export default class InconsistentException extends Error {
+import RuntimeException from "@htliang/java_type/src/main/ets/java/lang/RuntimeException";
+
+export default class InconsistentException extends RuntimeException {
   private _clientChecksum: number;
 
   public set clientChecksum(value: number) {

@@ -1,6 +1,7 @@
+import RuntimeException from '@htliang/java_type/src/main/ets/java/lang/RuntimeException';
 import CommonConstant from '../CommonConstant';
 
-export default class ServiceException implements Error {
+export default class ServiceException extends  RuntimeException {
   name: string;
   message: string;
   stack?: string;
@@ -14,6 +15,7 @@ export default class ServiceException implements Error {
   constructor(errorMessage?: string, cause?: Error, errorCode?: string, requestId?: string, hostId?: string,
     rawResponseError?: string,
     ec?: string) {
+    super(errorMessage, cause);
     this.name = "ServiceException";
     this.errorMessage = errorMessage ?? CommonConstant.BLANK;
     this.errorCode = errorCode ?? CommonConstant.BLANK;
