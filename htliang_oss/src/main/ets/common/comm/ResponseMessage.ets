@@ -1,13 +1,15 @@
 import OSSHeaders from '../../internal/OSSHeaders';
 import HttpMessage from './HttpMessage';
 import { Request } from './SeviceClient';
+import { http } from '@kit.NetworkKit';
+import InputStream from '@htliang/java_type/src/main/ets/java/io/InputStream';
 
 export default class ResponseMessage extends HttpMessage {
   private static readonly HTTP_SUCCESS_STATUS_CODE: number = 200;
   private uri: string = '';
   private statusCode: number = -1;
   private request: Request;
-  // private httpResponse: CloseableHttpResponse | null;
+  private httpResponse?: http.HttpResponse;
   private errorResponseAsString: string = '';
 
   constructor(request: Request) {
@@ -57,11 +59,11 @@ export default class ResponseMessage extends HttpMessage {
     // }
   }
 
-  // getHttpResponse(): CloseableHttpResponse | null {
-  //   return this.httpResponse;
-  // }
-  //
-  // setHttpResponse(httpResponse: CloseableHttpResponse): void {
-  //   this.httpResponse = httpResponse;
-  // }
+  getHttpResponse(): http.HttpResponse | undefined {
+    return this.httpResponse;
+  }
+
+  setHttpResponse(httpResponse: http.HttpResponse): void {
+    this.httpResponse = httpResponse;
+  }
 }

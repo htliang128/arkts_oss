@@ -106,7 +106,7 @@ export abstract class ServiceClient {
         let poolStatsInfo = this.clientConfiguration.isLogConnectionPoolStatsEnable() ?
           "Connection pool stats " + this.getConnectionPoolStats() : "";
         let startTime = Date.now();
-        response = this.sendRequestCore(httpRequest, context);
+        response = await this.sendRequestCore(httpRequest, context);
         let duration = Date.now() - startTime;
         if (duration > this.clientConfiguration.getSlowRequestsThreshold()) {
           LogUtils.warn(this.formatSlowRequestLog(request, response, duration) + poolStatsInfo);
@@ -155,7 +155,7 @@ export abstract class ServiceClient {
     }
   }
 
-  protected abstract sendRequestCore(request: Request, context: ExecutionContext): ResponseMessage;
+  protected abstract sendRequestCore(request: Request, context: ExecutionContext): Promise<ResponseMessage>;
 
   private buildRequest(requestMessage: RequestMessage, context: ExecutionContext): Request {
     let request = new Request();

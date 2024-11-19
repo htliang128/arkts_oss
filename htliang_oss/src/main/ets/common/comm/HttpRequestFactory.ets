@@ -2,24 +2,33 @@ import { ExecutionContext } from "./ExecutionContext";
 
 import { Request } from "./SeviceClient";
 import { http } from "@kit.NetworkKit";
-import CustomHttpRequestOptions from "./CustomHttpRequestOptions";
+import HttpRequestOptionsBuilder from "./CustomHttpRequestOptions";
 import CustomHttpRequest from "./CustomHttpRequest";
 import HttpHeaders from "../utils/HttpHeaders";
 import { TreeMap } from "@kit.ArkTS";
 
 export default class HttpRequestFactory {
-  public createHttpRequest(request: Request, context: ExecutionContext): CustomHttpRequest {
-    let httpRequestOptions: CustomHttpRequestOptions = new CustomHttpRequestOptions();
-    httpRequestOptions.method = request.getMethod();
-    httpRequestOptions.extraData = xxx;
+  public createHttpRequestOptionsBuilder(request: Request, context: ExecutionContext): HttpRequestOptionsBuilder {
+    let httpRequestOptions: HttpRequestOptionsBuilder = new HttpRequestOptionsBuilder();
+    let method = request.getMethod();
 
-    let uri = request.getUri();
+    switch (method) {
+      case http.RequestMethod.POST:
+      case http.RequestMethod.PUT:
+      case http.RequestMethod.DELETE:
+        if (request.content) {
+          httpRequestOptions.setExtraData(request.content.readNBytes(request.contentLength));
+        }
+    }
+
+    httpRequestOptions.setMethod(method);
+    httpRequestOptions.setExpectDataType(http.HttpDataType.ARRAY_BUFFER);
     this.configureRequestHeaders(request, context, httpRequestOptions);
-    return new CustomHttpRequest(uri, httpRequestOptions);
+    return httpRequestOptions;
   }
 
   private configureRequestHeaders(request: Request, context: ExecutionContext,
-    httpRequestOptions: CustomHttpRequestOptions): void {
+    httpRequestOptions: HttpRequestOptionsBuilder): void {
     request.headers.forEach((value, key) => {
       if (!key) {
         return;
@@ -27,10 +36,10 @@ export default class HttpRequestFactory {
       if (key.toUpperCase() === HttpHeaders.CONTENT_LENGTH || key.toUpperCase() === HttpHeaders.HOST) {
         return;
       }
-      if (!httpRequestOptions.header) {
-        httpRequestOptions.header = new TreeMap();
+      if (!httpRequestOptions.getHeader()) {
+        httpRequestOptions.setHeader(new TreeMap());
       }
-      httpRequestOptions.header.set(key, value);
+      httpRequestOptions.getHeader()?.set(key, value);
     })
   }
 }

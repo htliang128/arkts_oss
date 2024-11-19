@@ -1,197 +1,222 @@
 import { http } from "@kit.NetworkKit";
 import { TreeMap } from "@kit.ArkTS";
 
-export default class CustomHttpRequestOptions implements http.HttpRequestOptions {
+export default class HttpRequestOptionsBuilder{
   constructor() {
   }
 
-  private _method?: http.RequestMethod | undefined;
+  private method?: http.RequestMethod;
+  private extraData?: string | Object | ArrayBuffer;
+  private expectDataType?: http.HttpDataType;
+  private usingCache?: boolean;
+  private priority?: number;
+  private header?: TreeMap<string,string>;
+  private readTimeout?: number;
+  private connectTimeout?: number;
+  private usingProtocol?: http.HttpProtocol;
+  private usingProxy?: boolean | http.HttpProxy;
+  private caPath?: string;
+  private resumeFrom?: number;
+  private resumeTo?: number;
+  private clientCert?: http.ClientCert;
+  private dnsOverHttps?: string;
+  private dnsServers?: Array<string>;
+  private maxLimit?: number;
+  private multiFormDataList?: Array<http.MultiFormData>;
+  private certificatePinning?: http.CertificatePinning | http.CertificatePinning[];
 
-  public set method(value: http.RequestMethod | undefined) {
-    this._method = value;
+  // Getter and setter for method
+  getMethod(): http.RequestMethod | undefined {
+    return this.method;
   }
 
-  public get method(): http.RequestMethod | undefined {
-    return this._method;
+  setMethod(value: http.RequestMethod | undefined): void {
+    this.method = value;
   }
 
-  private _extraData?: string | Object | ArrayBuffer | undefined;
-
-  public set extraData(value: string | Object | ArrayBuffer | undefined) {
-    this._extraData = value;
+  // Getter and setter for extraData
+  getExtraData(): string | Object | ArrayBuffer | undefined {
+    return this.extraData;
   }
 
-  public get extraData(): string | Object | ArrayBuffer | undefined {
-    return this._extraData;
+  setExtraData(value: string | Object | ArrayBuffer | undefined): void {
+    this.extraData = value;
   }
 
-  private _expectDataType?: http.HttpDataType | undefined;
-
-  public set expectDataType(value: http.HttpDataType | undefined) {
-    this._expectDataType = value;
+  // Getter and setter for expectDataType
+  getExpectDataType(): http.HttpDataType | undefined {
+    return this.expectDataType;
   }
 
-  public get expectDataType(): http.HttpDataType | undefined {
-    return this._expectDataType;
+  setExpectDataType(value: http.HttpDataType | undefined): void {
+    this.expectDataType = value;
   }
 
-  private _usingCache?: boolean | undefined;
-
-  public set usingCache(value: boolean | undefined) {
-    this._usingCache = value;
+  // Getter and setter for usingCache
+  getUsingCache(): boolean | undefined {
+    return this.usingCache;
   }
 
-  public get usingCache(): boolean | undefined {
-    return this._usingCache;
+  setUsingCache(value: boolean | undefined): void {
+    this.usingCache = value;
   }
 
-  private _priority?: number | undefined;
-
-  public set priority(value: number | undefined) {
-    this._priority = value;
+  // Getter and setter for priority
+  getPriority(): number | undefined {
+    return this.priority;
   }
 
-  public get priority(): number | undefined {
-    return this._priority;
+  setPriority(value: number | undefined): void {
+    this.priority = value;
   }
 
-  private _header?: TreeMap<string, string> | undefined;
-
-  public set header(value: TreeMap<string, string> | undefined) {
-    this._header = value;
+  // Getter and setter for header
+  getHeader(): TreeMap<string,string> | undefined {
+    return this.header;
   }
 
-  public get header(): TreeMap<string, string> | undefined {
-    return this._header;
+  setHeader(value: TreeMap<string,string> | undefined): void {
+    this.header = value;
   }
 
-  private _readTimeout?: number | undefined;
-
-  public set readTimeout(value: number | undefined) {
-    this._readTimeout = value;
+  // Getter and setter for readTimeout
+  getReadTimeout(): number | undefined {
+    return this.readTimeout;
   }
 
-  public get readTimeout(): number | undefined {
-    return this._readTimeout;
+  setReadTimeout(value: number | undefined): void {
+    this.readTimeout = value;
   }
 
-  private _connectTimeout?: number | undefined;
-
-  public set connectTimeout(value: number | undefined) {
-    this._connectTimeout = value;
+  // Getter and setter for connectTimeout
+  getConnectTimeout(): number | undefined {
+    return this.connectTimeout;
   }
 
-  public get connectTimeout(): number | undefined {
-    return this._connectTimeout;
+  setConnectTimeout(value: number | undefined): void {
+    this.connectTimeout = value;
   }
 
-  private _usingProtocol?: http.HttpProtocol | undefined;
-
-  public set usingProtocol(value: http.HttpProtocol | undefined) {
-    this._usingProtocol = value;
+  // Getter and setter for usingProtocol
+  getUsingProtocol(): http.HttpProtocol | undefined {
+    return this.usingProtocol;
   }
 
-  public get usingProtocol(): http.HttpProtocol | undefined {
-    return this._usingProtocol;
+  setUsingProtocol(value: http.HttpProtocol | undefined): void {
+    this.usingProtocol = value;
   }
 
-  private _usingProxy?: boolean | http.HttpProxy | undefined;
-
-  public set usingProxy(value: boolean | http.HttpProxy | undefined) {
-    this._usingProxy = value;
+  // Getter and setter for usingProxy
+  getUsingProxy(): boolean | http.HttpProxy | undefined {
+    return this.usingProxy;
   }
 
-  public get usingProxy(): boolean | http.HttpProxy | undefined {
-    return this._usingProxy;
+  setUsingProxy(value: boolean | http.HttpProxy | undefined): void {
+    this.usingProxy = value;
   }
 
-  private _caPath?: string | undefined;
-
-  public set caPath(value: string | undefined) {
-    this._caPath = value;
+  // Getter and setter for caPath
+  getCaPath(): string | undefined {
+    return this.caPath;
   }
 
-  public get caPath(): string | undefined {
-    return this._caPath;
+  setCaPath(value: string | undefined): void {
+    this.caPath = value;
   }
 
-  private _resumeFrom?: number | undefined;
-
-  public set resumeFrom(value: number | undefined) {
-    this._resumeFrom = value;
+  // Getter and setter for resumeFrom
+  getResumeFrom(): number | undefined {
+    return this.resumeFrom;
   }
 
-  public get resumeFrom(): number | undefined {
-    return this._resumeFrom;
+  setResumeFrom(value: number | undefined): void {
+    this.resumeFrom = value;
   }
 
-  private _resumeTo?: number | undefined;
-
-  public set resumeTo(value: number | undefined) {
-    this._resumeTo = value;
+  // Getter and setter for resumeTo
+  getResumeTo(): number | undefined {
+    return this.resumeTo;
   }
 
-  public get resumeTo(): number | undefined {
-    return this._resumeTo;
+  setResumeTo(value: number | undefined): void {
+    this.resumeTo = value;
   }
 
-  private _clientCert?: http.ClientCert | undefined;
-
-  public set clientCert(value: http.ClientCert | undefined) {
-    this._clientCert = value;
+  // Getter and setter for clientCert
+  getClientCert(): http.ClientCert | undefined {
+    return this.clientCert;
   }
 
-  public get clientCert(): http.ClientCert | undefined {
-    return this._clientCert;
+  setClientCert(value: http.ClientCert | undefined): void {
+    this.clientCert = value;
   }
 
-  private _dnsOverHttps?: string | undefined;
-
-  public set dnsOverHttps(value: string | undefined) {
-    this._dnsOverHttps = value;
+  // Getter and setter for dnsOverHttps
+  getDnsOverHttps(): string | undefined {
+    return this.dnsOverHttps;
   }
 
-  public get dnsOverHttps(): string | undefined {
-    return this._dnsOverHttps;
+  setDnsOverHttps(value: string | undefined): void {
+    this.dnsOverHttps = value;
   }
 
-  private _dnsServers?: Array<string> | undefined;
-
-  public set dnsServers(value: Array<string> | undefined) {
-    this._dnsServers = value;
+  // Getter and setter for dnsServers
+  getDnsServers(): Array<string> | undefined {
+    return this.dnsServers;
   }
 
-  public get dnsServers(): Array<string> | undefined {
-    return this._dnsServers;
+  setDnsServers(value: Array<string> | undefined): void {
+    this.dnsServers = value;
   }
 
-  private _maxLimit?: number | undefined;
-
-  public set maxLimit(value: number | undefined) {
-    this._maxLimit = value;
+  // Getter and setter for maxLimit
+  getMaxLimit(): number | undefined {
+    return this.maxLimit;
   }
 
-  public get maxLimit(): number | undefined {
-    return this._maxLimit;
+  setMaxLimit(value: number | undefined): void {
+    this.maxLimit = value;
   }
 
-  private _multiFormDataList?: Array<http.MultiFormData> | undefined;
-
-  public set multiFormDataList(value: Array<http.MultiFormData> | undefined) {
-    this._multiFormDataList = value;
+  // Getter and setter for multiFormDataList
+  getMultiFormDataList(): Array<http.MultiFormData> | undefined {
+    return this.multiFormDataList;
   }
 
-  public get multiFormDataList(): Array<http.MultiFormData> | undefined {
-    return this._multiFormDataList;
+  setMultiFormDataList(value: Array<http.MultiFormData> | undefined): void {
+    this.multiFormDataList = value;
   }
 
-  private _certificatePinning?: http.CertificatePinning | http.CertificatePinning[] | undefined;
-
-  public set certificatePinning(value: http.CertificatePinning | http.CertificatePinning[] | undefined) {
-    this._certificatePinning = value;
+  // Getter and setter for certificatePinning
+  getCertificatePinning(): http.CertificatePinning | http.CertificatePinning[] | undefined {
+    return this.certificatePinning;
   }
 
-  public get certificatePinning(): http.CertificatePinning | http.CertificatePinning[] | undefined {
-    return this._certificatePinning;
+  setCertificatePinning(value: http.CertificatePinning | http.CertificatePinning[] | undefined): void {
+    this.certificatePinning = value;
+  }
+
+  public build(): http.HttpRequestOptions {
+    return {
+      method: this.method,
+      extraData: this.extraData,
+      expectDataType: this.expectDataType,
+      usingCache: this.usingCache,
+      priority: this.priority,
+      header: this.header,
+      readTimeout: this.readTimeout,
+      connectTimeout: this.connectTimeout,
+      usingProtocol: this.usingProtocol,
+      usingProxy: this.usingProxy,
+      caPath: this.caPath,
+      resumeFrom: this.resumeFrom,
+      resumeTo: this.resumeTo,
+      clientCert: this.clientCert,
+      dnsOverHttps: this.dnsOverHttps,
+      dnsServers: this.dnsServers,
+      maxLimit: this.maxLimit,
+      multiFormDataList: this.multiFormDataList,
+      certificatePinning: this.certificatePinning
+    }
   }
 }

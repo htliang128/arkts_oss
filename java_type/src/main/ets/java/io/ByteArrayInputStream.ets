@@ -7,19 +7,25 @@ export default class ByteArrayInputStream extends InputStream {
   protected markPos: number = 0;
   protected count: number;
 
+  constructor(buf: ArrayBuffer);
+
   constructor(buf: Uint8Array);
 
   constructor(buf: Uint8Array, offset: number, length: number);
 
-  constructor(buf: Uint8Array, offset?: number, length?: number) {
+  constructor(buf: ArrayBuffer | Uint8Array, offset?: number, length?: number) {
     super();
-    this.buf = buf;
+    if (buf instanceof Uint8Array) {
+      this.buf = buf;
+    } else {
+      this.buf = new Uint8Array(buf);
+    }
     this.pos = offset ?? 0;
     if (offset && length) {
-      this.count = Math.min(buf.length, offset + length);
+      this.count = Math.min(this.buf.length, offset + length);
       return
     }
-    this.count = buf.length;
+    this.count = this.buf.length;
   }
 
 
