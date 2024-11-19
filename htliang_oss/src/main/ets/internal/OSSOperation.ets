@@ -97,10 +97,10 @@ export default abstract class OSSOperation {
       response = await this.client.sendRequest(request, context);
       return response;
     } catch (e) {
-      if (e instanceof ServiceException) {
-        throw e as OSSException;
-      }
-      throw e;
+      // if (e instanceof ServiceException) {
+      //   throw e as OSSException;
+      // }
+      throw new Error(e);
     } finally {
       if (response && !keepResponseOpen) {
         this.safeCloseResponse(response);

@@ -19,7 +19,7 @@ export default class ClientConfiguration {
   public static readonly DEFAULT_SLOW_REQUESTS_THRESHOLD = 5;
   public static readonly DEFAULT_USE_REAPER = true;
   public static readonly DEFAULT_CNAME_EXCLUDE_LIST = "aliyuncs.com,aliyun-inc.com,aliyun.com";
-  public static readonly DEFAULT_SIGNATURE_VERSION = SignVersion.V1;
+  public static readonly DEFAULT_SIGNATURE_VERSION = SignVersion.V4;
   protected userAgent: string = ClientConfiguration.DEFAULT_USER_AGENT;
   protected maxErrorRetry: number = ClientConfiguration.DEFAULT_MAX_RETRIES;
   protected connectionRequestTimeout: number = ClientConfiguration.DEFAULT_CONNECTION_REQUEST_TIMEOUT;
@@ -295,6 +295,9 @@ export default class ClientConfiguration {
   }
 
   setSignatureVersion(signatureVersion: SignVersion): void {
+    if (signatureVersion !== SignVersion.V4) {
+      throw new Error('CurrentVersion support V4 only!')
+    }
     this.signatureVersion = signatureVersion;
   }
 

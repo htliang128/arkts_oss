@@ -6,10 +6,18 @@ export default class OSSException extends ServiceException {
   header: string;
   method: string;
 
+  constructor();
+  constructor(errorMessage: string);
+  constructor(errorMessage: string,cause: Error);
+
   constructor(resourceType?: string, header?: string, method?: string, errorMessage?: string, cause?: Error,
     errorCode?: string, requestId?: string, hostId?: string,
     rawResponseError?: string,
     ec?: string) {
+
+
+
+
     super(errorMessage, cause, errorCode, requestId, hostId, rawResponseError, ec);
     this.resourceType = resourceType ?? CommonConstant.BLANK;
     this.header = header ?? CommonConstant.BLANK;

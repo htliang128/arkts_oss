@@ -1,3 +1,4 @@
+import FileInputStream from '@htliang/java_type/src/main/ets/java/io/FileInputStream';
 import InputStream from '@htliang/java_type/src/main/ets/java/io/InputStream';
 import fs from '@ohos.file.fs';
 import CallbackInfo from './CallbackInfo';
@@ -27,6 +28,7 @@ export default class PutObjectRequest extends GenericRequest {
       this.inputStream = input;
     } else {
       this.file = input;
+      this.inputStream = new FileInputStream(input.path);
     }
   }
 

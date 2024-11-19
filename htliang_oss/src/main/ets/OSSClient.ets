@@ -7,11 +7,9 @@ import uri from '@ohos.uri';
 import { ServiceClient } from './common/comm/SeviceClient';
 import ClientConfiguration from './ClientConfiguration';
 import PutObjectRequest from './model/PutObjectRequest';
-import CodingUtils from './common/utils/CodingUtils';
 import InputStream from '@htliang/java_type/src/main/ets/java/io/InputStream';
 import { OSSUtils } from './internal/OSSUtils';
 import OSSObjectOperation from './internal/OSSObjectOperation';
-import DefaultCredentials from './common/auth/DefaultCredential';
 import DefaultCredentialProvider from './common/auth/DefaultCredentialProvider';
 import DefaultServiceClient from './common/comm/DefaultServiceClient';
 import OSSConstants from './internal/OSSConstants';
@@ -232,14 +230,6 @@ export default class OSSClient implements OSS {
     // this.corsOperation.setCloudBoxId(cloudBoxId);
     // this.liveChannelOperation.setCloudBoxId(cloudBoxId);
   }
-
-
-  // constructor(arg1:string, credentialProvider:CredentialsProvider,clientConfiguration?:ClientConfiguration) {
-  //   this.credentialsProvider = credentialProvider;
-  //   clientConfiguration = clientConfiguration?? new ClientConfiguration();
-  //   this.endpoint = new uri.URI(endpoint);
-  // }
-
 
   public switchCredentials(credentials: Credentials): void {
     this.credsProvider.setCredentials(credentials);

@@ -3,7 +3,6 @@ import { ExecutionContext } from "./ExecutionContext";
 import { Request } from "./SeviceClient";
 import { http } from "@kit.NetworkKit";
 import HttpRequestOptionsBuilder from "./CustomHttpRequestOptions";
-import CustomHttpRequest from "./CustomHttpRequest";
 import HttpHeaders from "../utils/HttpHeaders";
 import { TreeMap } from "@kit.ArkTS";
 
