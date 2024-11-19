@@ -1,4 +1,37 @@
 export default class ClientErrorCode {
+  static readonly PARAMETER_ERROR = "ParameterError";
+  static readonly PERMISSION_DENIED = "PermissionDenied";
+  static readonly UNSUPPORTED_PROTOCOL = "UnsupportedProtocol";
+  static readonly INVALID_URL_FORMAT_OR_MISSING_URL = "InvalidUrlFormatOrMissingUrl";
+  static readonly FAILED_TO_RESOLVE_THE_PROXY_NAME = "FailedToResolveTheProxyName";
+  static readonly FAILED_TO_RESOLVE_THE_HOST_NAME = "FailedToResolveTheHostName";
+  static readonly FAILED_TO_CONNECT_TO_THE_SERVER = "FailedToConnectToTheServer";
+  static readonly INVALID_SERVER_RESPONSE = "InvalidServerResponse";
+  static readonly ACCESS_TO_THE_REMOTE_RESOURCE_DENIED = "AccessToTheRemoteResourceDenied";
+  static readonly ERROR_IN_THE_HTTP2_FRAMING_LAYER = "ErrorInTheHTTP2framingLayer";
+  static readonly TRANSFERRED_A_PARTIAL_FILE = "TransferredAPartialFile";
+  static readonly FAILED_TO_WRITE_THE_RECEIVED_DATA = "FailedToWriteTheReceivedDataToTheDiskOrApplication";
+  static readonly UPLOAD_FAILED = "UploadFailed";
+  static readonly FAILED_TO_OPEN_OR_READ_LOCAL_DATA = "FailedToOpenOrReadLocalDataFromTheFileOrApplication";
+  static readonly OUT_OF_MEMORY = "OurOfMemory";
+  static readonly OPERATION_TIMEOUT = "OperationTimeout";
+  static readonly REDIRECTED_NUMBERS_EXCEED = "TheNumberOfRedirectionsReachesTheMaximumAllowed";
+  static readonly EMPTY_RETURN = "TheServerReturnedNothing";
+  static readonly FAILED_TO_SEND_DATA_TO_THE_PEER = "FailedToSendDataToThePeer";
+  static readonly FAILED_TO_RECEIVE_DATA_FROM_THE_PEER = "FailedToReceiveDataFromThePeer";
+  static readonly LOCAL_SSL_CERTIFICATE_ERROR = "LocalSSLCertificateError";
+  static readonly THE_SPECIFIED_SSL_CIPHER_CANNOT_BE_USED = "TheSpecifiedSSLCipherCannotBeUsed";
+  static readonly INVALID_SSL_PEER_CERTIFICATE_OR_SSH_REMOTE_KEY = "InvalidSSLPeerCertificateOrSSHRemoteKey";
+  static readonly INVALID_HTTP_ENCODING_FORMAT = "InvalidHTTPEncodingFormat";
+  static readonly MAXIMUM_FILE_SIZE_EXCEEDED = "MaximumFileSizeExceeded";
+  static readonly REMOTE_DISK_FULL = "RemoteDiskFull";
+  static readonly REMOTE_FILE_ALREADY_EXISTS = "RemoteFileAlreadyExists";
+  static readonly THE_SSL_CA_CERTIFICATE_NOT_EXIST_OR_INACCESSIBLE = "TheSslCaCertificateDoesNotExistOrIsInaccessible";
+  static readonly REMOTE_FILE_NOT_FOUND = "RemoteFileNotFound";
+  static readonly AUTHENTICATION_ERROR = "AuthenticationError";
+  static readonly IT_IS_NOT_ALLOWED_TO_ACCESS_THIS_DOMAIN = "ItIsNotAllowedToAccessThisDomain";
+  static readonly UNKNOWN_ERROR = "UnknownError";
+
   static readonly UNKNOWN = "Unknown";
   static readonly UNKNOWN_HOST = "UnknownHost";
   static readonly CONNECTION_TIMEOUT = "ConnectionTimeout";

@@ -13,13 +13,16 @@ import { OSSUtils } from './internal/OSSUtils';
 import OSSObjectOperation from './internal/OSSObjectOperation';
 import DefaultCredentials from './common/auth/DefaultCredential';
 import DefaultCredentialProvider from './common/auth/DefaultCredentialProvider';
+import DefaultServiceClient from './common/comm/DefaultServiceClient';
+import OSSConstants from './internal/OSSConstants';
+import LogUtils from './common/utils/LogUtils';
 
 export default class OSSClient implements OSS {
   private credsProvider: CredentialsProvider;
-  private endpoint: uri.URI;
+  private endpoint?: uri.URI;
   private serviceClient: ServiceClient;
   // private bucketOperation: OSSBucketOperation;
-  private objectOperation: OSSObjectOperation;
+  private objectOperation?: OSSObjectOperation;
 
   // private multipartOperation: OSSMultipartOperation;
   // private corsOperation: CORSOperation;
@@ -46,16 +49,93 @@ export default class OSSClient implements OSS {
   constructor(arg1: string, arg2: string | CredentialsProvider, arg3?: string | ClientConfiguration,
     arg4?: string | ClientConfiguration,
     arg5?: ClientConfiguration) {
-    if (typeof arg2 !== 'string') {
+    if (!arg3) {
+      if (typeof arg2 === 'string') {
+        this.credsProvider = new DefaultCredentialProvider(arg1, arg2);
+        this.serviceClient = new DefaultServiceClient(new ClientConfiguration());
+        this.initOperations();
+        this.setEndpoint(OSSConstants.DEFAULT_OSS_ENDPOINT);
+        this.initDefaultsByEndpoint();
+        return;
+      }
       this.credsProvider = arg2;
-      let config = arg3 ? arg3 as ClientConfiguration : new ClientConfiguration();
-      if (config.isRequestTimeoutEnabled()) {
-        this.serviceClient = new Timeout
+      this.serviceClient = new DefaultServiceClient(new ClientConfiguration());
+      ;
+      this.initOperations();
+      this.setEndpoint(arg1);
+      this.initDefaultsByEndpoint();
+      return;
+    }
+
+    if (!arg4) {
+      if (typeof arg3 === 'string') {
+        this.credsProvider = new DefaultCredentialProvider(arg2 as string, arg3);
+        this.serviceClient = new DefaultServiceClient(new ClientConfiguration());
+        this.initOperations();
+        this.setEndpoint(arg1);
+        this.initDefaultsByEndpoint();
+        return;
+      }
+      this.credsProvider = arg2 as CredentialsProvider;
+      this.serviceClient = new DefaultServiceClient(arg3);
+      this.initOperations();
+      this.setEndpoint(arg1);
+      this.initDefaultsByEndpoint();
+      return;
+    }
+
+    if (!arg5) {
+      if (typeof arg4 === 'string') {
+        this.credsProvider = new DefaultCredentialProvider(arg2 as string, arg3 as string, arg4);
+        this.serviceClient = new DefaultServiceClient(new ClientConfiguration());
+        this.initOperations();
+        this.setEndpoint(arg1);
+        this.initDefaultsByEndpoint();
+        return;
+      }
+      this.credsProvider = new DefaultCredentialProvider(arg2 as string, arg3 as string);
+      this.serviceClient = new DefaultServiceClient(arg4);
+      this.initOperations();
+      this.setEndpoint(arg1);
+      this.initDefaultsByEndpoint();
+      return;
+    }
+
+    this.credsProvider = new DefaultCredentialProvider(arg2 as string, arg3 as string, arg4 as string);
+    this.serviceClient = new DefaultServiceClient(arg5);
+    this.initOperations();
+    this.setEndpoint(arg1);
+    this.initDefaultsByEndpoint();
+  }
+
+  private initDefaultsByEndpoint() {
+    if (!this.serviceClient.getClientConfiguration().isExtractSettingFromEndpointEnable()) {
+      return;
+    }
+
+    if (!this.endpoint) {
+      return;
+    }
+
+    //cloud box endpoint pattern: cloudbox-id.region.oss-cloudbox[-control].aliyuncs.com
+    //cloudbox-id start with cb-
+    if (this.isCloudBoxEndpointSuffix(this.endpoint)) {
+      let host = this.endpoint.host;
+      let keys = host.split('.');
+      if (keys.length == 5) {
+        if (keys[0].startsWith("cb-")) {
+          this.setCloudBoxId(keys[0]);
+          this.setRegion(keys[1]);
+          this.setProduct(OSSConstants.PRODUCT_CLOUD_BOX);
+          if (SignVersion.V4 > this.serviceClient.getClientConfiguration().getSignatureVersion()) {
+            this.setSignatureVersionInner(SignVersion.V4);
+          }
+        }
       }
     }
   }
 
-  setEndpoint(endpoint: string) {
+  private setEndpoint(endpoint: string) {
     let uri = this.toURI(endpoint);
     this.endpoint = uri;
     OSSUtils.ensureEndpointValid(uri.host);
@@ -65,7 +145,7 @@ export default class OSSClient implements OSS {
     }
 
     // this.bucketOperation.setEndpoint(uri);
-    this.objectOperation.setEndpoint(uri);
+    this.objectOperation?.setEndpoint(uri);
     // this.multipartOperation.setEndpoint(uri);
     // this.corsOperation.setEndpoint(uri);
     // this.liveChannelOperation.setEndpoint(uri);
@@ -122,7 +202,7 @@ export default class OSSClient implements OSS {
 
   private setSignatureVersionInner(version: SignVersion): void {
     // this.bucketOperation.setSignVersion(version);
-    this.objectOperation.setSignVersion(version);
+    this.objectOperation?.setSignVersion(version);
     // this.multipartOperation.setSignVersion(version);
     // this.corsOperation.setSignVersion(version);
     // this.liveChannelOperation.setSignVersion(version);
@@ -130,7 +210,7 @@ export default class OSSClient implements OSS {
 
   public setProduct(product: string): void {
     // this.bucketOperation.setProduct(product);
-    this.objectOperation.setProduct(product);
+    this.objectOperation?.setProduct(product);
     // this.multipartOperation.setProduct(product);
     // this.corsOperation.setProduct(product);
     // this.liveChannelOperation.setProduct(product);
@@ -139,7 +219,7 @@ export default class OSSClient implements OSS {
 
   public setRegion(region: string): void {
     // this.bucketOperation.setRegion(region);
-    this.objectOperation.setRegion(region);
+    this.objectOperation?.setRegion(region);
     // this.multipartOperation.setRegion(region);
     // this.corsOperation.setRegion(region);
     // this.liveChannelOperation.setRegion(region);
@@ -147,7 +227,7 @@ export default class OSSClient implements OSS {
 
   public setCloudBoxId(cloudBoxId: string): void {
     // this.bucketOperation.setCloudBoxId(cloudBoxId);
-    this.objectOperation.setCloudBoxId(cloudBoxId);
+    this.objectOperation?.setCloudBoxId(cloudBoxId);
     // this.multipartOperation.setCloudBoxId(cloudBoxId);
     // this.corsOperation.setCloudBoxId(cloudBoxId);
     // this.liveChannelOperation.setCloudBoxId(cloudBoxId);
@@ -161,27 +241,43 @@ export default class OSSClient implements OSS {
   // }
 
 
-  switchCredentials(credentials: Credentials): void {
-    throw new Error('Method not implemented.');
+  public switchCredentials(credentials: Credentials): void {
+    this.credsProvider.setCredentials(credentials);
   }
 
-  switchSignatureVersion(signatureVersion: SignVersion): void {
-    throw new Error('Method not implemented.');
+  public switchSignatureVersion(signatureVersion: SignVersion): void {
+    this.getClientConfiguration().setSignatureVersion(signatureVersion);
   }
 
-  shutdown(): void {
-    throw new Error('Method not implemented.');
+  public getCredentialsProvider(): CredentialsProvider {
+    return this.credsProvider;
   }
 
-  getConnectionPoolStats(): string {
-    throw new Error('Method not implemented.');
+  public getClientConfiguration(): ClientConfiguration {
+    return this.serviceClient.getClientConfiguration();
   }
 
-  putObject(request: PutObjectRequest): PutObjectResult;
+  public shutdown(): void {
+    try {
+      this.serviceClient.shutdown();
+    } catch (e) {
+      LogUtils.logException("shutdown throw exception: ", e);
+    }
+  }
 
-  putObject(bucketName: string, key: string, input: InputStream): PutObjectResult;
+  public getConnectionPoolStats(): string {
+    try {
+      return this.serviceClient.getConnectionPoolStats();
+    } catch (e) {
+    }
+    return "";
+  }
 
-  putObject(bucketName: PutObjectRequest | string, key?: string, input?: InputStream): PutObjectResult {
+  public putObject(request: PutObjectRequest): PutObjectResult;
+
+  public putObject(bucketName: string, key: string, input: InputStream): PutObjectResult;
+
+  public putObject(bucketName: PutObjectRequest | string, key?: string, input?: InputStream): PutObjectResult {
     throw new Error('Method not implemented.');
   }
 }

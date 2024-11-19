@@ -1,5 +1,4 @@
 import ClientConfiguration from "../../ClientConfiguration";
-import CustomHttpRequest from "./CustomHttpRequest";
 import { ExecutionContext } from "./ExecutionContext";
 import HttpRequestFactory from "./HttpRequestFactory";
 import { RequestConfig } from "./RequestConfig";
@@ -10,8 +9,10 @@ import { http } from "@kit.NetworkKit";
 import ClientException from "../../ClientException";
 import ByteArrayInputStream from "@htliang/java_type/src/main/ets/java/io/ByteArrayInputStream";
 import HttpHeaders from "../utils/HttpHeaders";
-import IOUtils from "../utils/IOUtils";
 import { buffer } from "@kit.ArkTS";
+import RequestMessage from "./RequestMessage";
+import ExceptionFactory from "../utils/ExceptionFactory";
+import ClientErrorCode from "../../ClientErrorCode";
 
 export default class DefaultServiceClient extends ServiceClient {
   protected static httpRequestFactory: HttpRequestFactory = new HttpRequestFactory();
@@ -50,7 +51,7 @@ export default class DefaultServiceClient extends ServiceClient {
     try {
       httpResponse = await httpRequest.request(uri, httpRequestOptionsBuilder.build());
     } catch (e) {
-      throw new ClientException(e as Error);
+      throw ExceptionFactory.createNetworkException(e as Error);
     } finally {
       httpRequest.destroy();
     }
@@ -58,7 +59,8 @@ export default class DefaultServiceClient extends ServiceClient {
     return this.buildResponse(request, httpResponse);
   }
 
-  private buildResponse(request: Request, httpResponse: http.HttpResponse): ResponseMessage | PromiseLike<ResponseMessage> {
+  private buildResponse(request: Request,
+    httpResponse: http.HttpResponse): ResponseMessage | PromiseLike<ResponseMessage> {
     let response = new ResponseMessage(request);
     response.setUrl(request.getUri());
     response.setHttpResponse(httpResponse);
@@ -71,8 +73,8 @@ export default class DefaultServiceClient extends ServiceClient {
       this.readAndSetErrorResponse(responseBuf, response);
     }
 
-    let headerMap = new Map<string,string>(Object.entries(httpResponse.header));
-    headerMap.forEach((value,key)=>{
+    let headerMap = new Map<string, string>(Object.entries(httpResponse.header));
+    headerMap.forEach((value, key) => {
       if (HttpHeaders.CONTENT_LENGTH === key.toUpperCase()) {
         response.contentLength = Number.parseInt(value);
       }
@@ -88,10 +90,29 @@ export default class DefaultServiceClient extends ServiceClient {
   }
 
   protected getDefaultRetryStrategy(): RetryStrategy {
-
+    return new DefaultRetryStrategy();
   }
 
   public shutdown(): void {
-    throw new Error("Method not implemented.");
+  }
+}
+
+class DefaultRetryStrategy extends RetryStrategy {
+  shouldRetry(ex: Error, request: RequestMessage, response: ResponseMessage, retries: number): boolean {
+    if (ex instanceof ClientException) {
+      let errorCode = ex.errorCode;
+      if (errorCode === ClientErrorCode.OPERATION_TIMEOUT ||
+        errorCode === ClientErrorCode.FAILED_TO_CONNECT_TO_THE_SERVER ||
+        errorCode === ClientErrorCode.INVALID_SERVER_RESPONSE) {
+        return true;
+      }
+    }
+
+    let statusCode = response.getStatusCode();
+    if (statusCode === 500 || statusCode == 502 || statusCode == 503) {
+      return true;
+    }
+
+    return false;
   }
 }

@@ -1,5 +1,6 @@
 export default class Throwable extends Error {
   private detailMessage: string;
+  private cause?: Error;
 
   constructor();
 
@@ -17,16 +18,22 @@ export default class Throwable extends Error {
     }
     if (typeof arg1 !== 'string') {
       super();
+      this.cause = arg1;
       this.detailMessage = '';
       this.stack = arg1.stack;
       return;
     }
     super(arg1);
     this.detailMessage = arg1;
+    this.cause = throwable;
     this.stack = throwable?.stack;
   }
 
   public getDetailMessage(): string {
     return this.detailMessage;
+  }
+
+  public getCause(): Error | undefined {
+    return this.cause;
   }
 }
