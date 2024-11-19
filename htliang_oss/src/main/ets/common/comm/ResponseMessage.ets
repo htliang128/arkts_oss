@@ -1,16 +1,16 @@
 import OSSHeaders from '../../internal/OSSHeaders';
 import HttpMessage from './HttpMessage';
-import ServiceClient from './SeviceClient';
+import { Request } from './SeviceClient';
 
 export default class ResponseMessage extends HttpMessage {
   private static readonly HTTP_SUCCESS_STATUS_CODE: number = 200;
   private uri: string = '';
   private statusCode: number = -1;
-  private request: ServiceClient.Request;
+  private request: Request;
   // private httpResponse: CloseableHttpResponse | null;
   private errorResponseAsString: string = '';
 
-  constructor(request: ServiceClient.Request) {
+  constructor(request: Request) {
     super();
     this.request = request;
   }
@@ -35,7 +35,7 @@ export default class ResponseMessage extends HttpMessage {
     return this.headers.get(OSSHeaders.OSS_HEADER_REQUEST_ID);
   }
 
-  getRequest(): ServiceClient.Request {
+  getRequest(): Request {
     return this.request;
   }
 

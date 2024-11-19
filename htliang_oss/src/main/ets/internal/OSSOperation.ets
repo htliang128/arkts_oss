@@ -16,7 +16,7 @@ import { OSSUtils } from './OSSUtils';
 import OSSException from '../common/exceptions/OSSException';
 import ResponseParser from '../common/parser/ResponseParser';
 import OSSSignerBase from './signer/OSSSignerBase';
-import { HttpMethod } from '../common/comm/HttpMethod';
+import { http } from '@kit.NetworkKit';
 
 export default abstract class OSSOperation {
   protected product: string;
@@ -192,7 +192,7 @@ export default abstract class OSSOperation {
     return OSSSignerBase.createRequestSigner(this.signVersion || config.getSignatureVersion(), params);
   }
 
-  protected createDefaultContext(method: HttpMethod, bucketName: string, key: string,
+  protected createDefaultContext(method: http.RequestMethod, bucketName: string, key: string,
     originalRequest?: WebServiceRequest): ExecutionContext {
     const context = new ExecutionContext();
     const credentials = this.credsProvider.getCredentials();
@@ -200,7 +200,7 @@ export default abstract class OSSOperation {
     context.setCharset(DEFAULT_CHARSET_NAME);
     context.setSigner(this.createSigner(bucketName, key, credentials, this.client.getClientConfiguration()));
     context.addResponseHandler(OSSOperation.errorResponseHandler);
-    if (method === HttpMethod.POST && !this.isRetryablePostRequest(originalRequest)) {
+    if (method === http.RequestMethod.POST && !this.isRetryablePostRequest(originalRequest)) {
       context.setRetryStrategy(OSSOperation.noRetryStrategy);
     }
 

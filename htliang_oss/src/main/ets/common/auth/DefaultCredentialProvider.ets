@@ -12,13 +12,16 @@ export default class DefaultCredentialProvider implements CredentialsProvider {
   constructor(accessKeyId: string, secretAccessKey: string, securityToken: string);
 
   constructor(arg: Credentials | string, secretAccessKey?: string, securityToken?: string) {
-    if (typeof arg !== 'string') {
-      DefaultCredentialProvider.checkCredentials(arg.getAccessKeyId(), arg.getSecretAccessKey());
-      this.credentials = arg;
+    if (!secretAccessKey) {
+      let credentials = arg as Credentials;
+      DefaultCredentialProvider.checkCredentials(credentials.getAccessKeyId(), credentials.getSecretAccessKey());
+      this.credentials = credentials;
       return;
     }
-    DefaultCredentialProvider.checkCredentials(arg, secretAccessKey);
-    this.credentials = new DefaultCredentials(arg, secretAccessKey, securityToken);
+
+    let accessKeyId = arg as string;
+    DefaultCredentialProvider.checkCredentials(accessKeyId, secretAccessKey);
+    this.credentials = new DefaultCredentials(accessKeyId, secretAccessKey, securityToken);
   }
 
   static build(accessKeyId: string, secretAccessKey: string, securityToken?: string) {

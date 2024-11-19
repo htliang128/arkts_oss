@@ -30,12 +30,12 @@ export default class ClientConfiguration {
   protected useReaper: boolean = ClientConfiguration.DEFAULT_USE_REAPER;
   protected idleConnectionTime: number = ClientConfiguration.DEFAULT_IDLE_CONNECTION_TIME;
   protected protocol: Protocol = Protocol.HTTP;
-  protected proxyHost: string | null = null;
+  protected proxyHost: string | undefined;
   protected proxyPort: number = -1;
-  protected proxyUsername: string | null = null;
-  protected proxyPassword: string | null = null;
-  protected proxyDomain: string | null = null;
-  protected proxyWorkstation: string | null = null;
+  protected proxyUsername: string | undefined;
+  protected proxyPassword: string | undefined;
+  protected proxyDomain: string | undefined;
+  protected proxyWorkstation: string | undefined;
   protected supportCname: boolean = true;
   protected cnameExcludeList: string[] = [];
   protected sldEnabled: boolean = false;
@@ -68,7 +68,7 @@ export default class ClientConfiguration {
     this.userAgent = userAgent;
   }
 
-  getProxyHost(): string | null {
+  getProxyHost(): string | undefined {
     return this.proxyHost;
   }
 
@@ -87,7 +87,7 @@ export default class ClientConfiguration {
     this.proxyPort = proxyPort;
   }
 
-  getProxyUsername(): string | null {
+  getProxyUsername(): string | undefined {
     return this.proxyUsername;
   }
 
@@ -95,7 +95,7 @@ export default class ClientConfiguration {
     this.proxyUsername = proxyUsername;
   }
 
-  getProxyPassword(): string | null {
+  getProxyPassword(): string | undefined {
     return this.proxyPassword;
   }
 
@@ -103,7 +103,7 @@ export default class ClientConfiguration {
     this.proxyPassword = proxyPassword;
   }
 
-  getProxyDomain(): string | null {
+  getProxyDomain(): string | undefined {
     return this.proxyDomain;
   }
 
@@ -111,7 +111,7 @@ export default class ClientConfiguration {
     this.proxyDomain = proxyDomain;
   }
 
-  getProxyWorkstation(): string | null {
+  getProxyWorkstation(): string | undefined {
     return this.proxyWorkstation;
   }
 

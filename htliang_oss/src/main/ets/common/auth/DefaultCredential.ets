@@ -8,9 +8,9 @@ export default class DefaultCredentials implements Credentials {
 
   constructor(accessKeyId: string, secretAccessKey: string);
 
-  constructor(accessKeyId: string, secretAccessKey: string, securityToken: string);
+  constructor(accessKeyId: string, secretAccessKey: string, securityToken: string | undefined);
 
-  constructor(accessKeyId: string, secretAccessKey?: string, securityToken?: string) {
+  constructor(accessKeyId: string, secretAccessKey: string, securityToken: string = CommonConstant.BLANK) {
     if (!accessKeyId) {
       throw new Error("Access key id should not be null or empty.");
     }

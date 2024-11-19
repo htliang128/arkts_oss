@@ -25,19 +25,17 @@ namespace ResponseParsers {
 
   function setCRC<ResultType extends GenericResult>(result: ResultType, response: ResponseMessage): void {
     const request = response.getRequest();
-    if (request !== null) {
-      const content = request.content;
-      if (content && content instanceof CheckedInputStream) {
-        let checkedIs = content as CheckedInputStream;
-        result.setClientCRC(checkedIs.getCheckSum().getValue());
-      }
+    const content = request.content;
+    if (content && content instanceof CheckedInputStream) {
+      let checkedIs = content as CheckedInputStream;
+      result.setClientCRC(checkedIs.getCheckSum().getValue());
+    }
 
 
-      const strSrvCrc = response.headers.get(OSSHeaders.OSS_HASH_CRC64_ECMA);
-      if (strSrvCrc !== undefined) {
-        const bi = BigInt(strSrvCrc);
-        result.setServerCRC(Number(bi));
-      }
+    const strSrvCrc = response.headers.get(OSSHeaders.OSS_HASH_CRC64_ECMA);
+    if (strSrvCrc !== undefined) {
+      const bi = BigInt(strSrvCrc);
+      result.setServerCRC(Number(bi));
     }
   }
 

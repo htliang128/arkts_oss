@@ -10,7 +10,6 @@ import HttpUtil from '../utils/HttpUtil';
 import LogUtils from '../utils/LogUtils';
 import { ExecutionContext } from './ExecutionContext';
 import HttpMessage from './HttpMessage';
-import { HttpMethod } from './HttpMethod';
 import RequestMessage from './RequestMessage';
 import ResponseMessage from './ResponseMessage';
 import RetryStrategy from './RetryStrategy';
@@ -19,6 +18,7 @@ import RuntimeException from '@htliang/java_type/src/main/ets/java/lang/RuntimeE
 import ResponseHandler from './ResponseHandler';
 import RequestHandler from './RequestHandler';
 import HttpHeaders from '../utils/HttpHeaders';
+import { http } from '@kit.NetworkKit';
 
 function sleepCallback(delay: number, callback: () => void) {
   setTimeout(callback, delay);
@@ -199,7 +199,7 @@ export abstract class ServiceClient {
      * we'll put them in the POST request's payload.
      */
     let requestHasNoPayload: boolean = requestMessage.content !== undefined;
-    let requestIsPost: boolean = requestMessage.method === HttpMethod.POST;
+    let requestIsPost: boolean = requestMessage.method === http.RequestMethod.POST;
     let putParamsInUri: boolean = !requestIsPost || requestHasNoPayload;
     if (paramString !== null && putParamsInUri) {
       uri += "?" + paramString;
@@ -272,7 +272,7 @@ export abstract class ServiceClient {
   }
 
   private closeResponseSilently(response: ResponseMessage): void {
-    if (response != null) {
+    if (response !== null) {
       try {
         response.close();
       } catch (e) {
@@ -297,7 +297,7 @@ export abstract class ServiceClient {
 
 export class Request extends HttpMessage {
   private uri: string = '';
-  private method: HttpMethod = HttpMethod.POST;
+  private method: http.RequestMethod = http.RequestMethod.POST;
   private useUrlSignature: boolean = false;
   private useChunkEncoding: boolean = false;
 
@@ -309,11 +309,11 @@ export class Request extends HttpMessage {
     this.uri = uri;
   }
 
-  public getMethod(): HttpMethod {
+  public getMethod(): http.RequestMethod {
     return this.method;
   }
 
-  public setMethod(method: HttpMethod): void {
+  public setMethod(method: http.RequestMethod): void {
     this.method = method;
   }
 

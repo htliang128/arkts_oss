@@ -1,4 +1,4 @@
-import { HttpMethod } from '../common/comm/HttpMethod';
+import { http } from '@kit.NetworkKit';
 
 enum WriteMode {
   APPEND = 'APPEND',
@@ -10,12 +10,12 @@ namespace WriteMode {
     return mode;
   }
 
-  export function getMappingMethod(mode: WriteMode): HttpMethod {
+  export function getMappingMethod(mode: WriteMode): http.RequestMethod {
     switch (mode) {
       case WriteMode.APPEND:
-        return HttpMethod.POST;
+        return http.RequestMethod.POST;
       case WriteMode.OVERWRITE:
-        return HttpMethod.PUT;
+        return http.RequestMethod.PUT;
       default:
         throw new Error("Unsupported write mode: " + mode);
     }

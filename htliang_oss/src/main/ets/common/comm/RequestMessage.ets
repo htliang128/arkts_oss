@@ -1,7 +1,7 @@
 import HttpMessage from './HttpMessage';
-import { HttpMethod } from './HttpMethod';
 import uri from '@ohos.uri'
 import { WebServiceRequest } from '../../internal/model/WebServiceRequest';
+import { http } from '@kit.NetworkKit';
 
 export default class RequestMessage extends HttpMessage {
   constructor() {
@@ -53,13 +53,13 @@ export default class RequestMessage extends HttpMessage {
   }
 
   /* The HTTP method to use when sending this request */
-  private _method: HttpMethod = HttpMethod.GET;
+  private _method: http.RequestMethod = http.RequestMethod.GET;
 
-  public set method(value: HttpMethod) {
+  public set method(value: http.RequestMethod) {
     this._method = value;
   }
 
-  public get method(): HttpMethod {
+  public get method(): http.RequestMethod {
     return this._method;
   }
 
