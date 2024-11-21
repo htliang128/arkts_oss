@@ -22,6 +22,17 @@ namespace ResponseParsers {
     }
   }
 
+  export class PutObjectProcessResponseParser implements ResponseParser<PutObjectResult> {
+    parse(response: ResponseMessage): PutObjectResult {
+      let result = new PutObjectResult();
+      result.setRequestId(response.getRequestId() ?? "");
+      result.setETag(OSSUtils.trimQuotes(response.headers.get(OSSHeaders.ETAG)) ?? "");
+      result.setVersionId(response.headers.get(OSSHeaders.OSS_HEADER_VERSION_ID));
+      result.setCallbackResponseBody(response.content);
+      result.setResponse(response);
+      return result;
+    }
+  }
 
   function setCRC<ResultType extends GenericResult>(result: ResultType, response: ResponseMessage): void {
     const request = response.getRequest();
@@ -56,7 +67,12 @@ namespace ResponseParsers {
     } catch (ignore) {
     }
   }
+
+  export const putObjectResponseParser = new PutObjectResponseParser();
+  export const putObjectProcessResponseParser = new PutObjectProcessResponseParser();
 }
+
+export default ResponseParsers;
 
 
 

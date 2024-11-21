@@ -263,11 +263,13 @@ export default class OSSClient implements OSS {
     return "";
   }
 
-  public putObject(request: PutObjectRequest): PutObjectResult;
-
-  public putObject(bucketName: string, key: string, input: InputStream): PutObjectResult;
-
-  public putObject(bucketName: PutObjectRequest | string, key?: string, input?: InputStream): PutObjectResult {
-    throw new Error('Method not implemented.');
+  public putObject(request: PutObjectRequest): PutObjectResult{
+    this.objectOperation?.putObject(request);
   }
+
+  // public putObject(bucketName: string, key: string, input: InputStream): PutObjectResult;
+  //
+  // public putObject(bucketName: PutObjectRequest | string, key?: string, input?: InputStream): PutObjectResult {
+  //   throw new Error('Method not implemented.');
+  // }
 }

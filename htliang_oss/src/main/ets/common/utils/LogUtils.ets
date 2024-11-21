@@ -3,7 +3,6 @@ import OSSErrorCode from "../../OSSErrorCode";
 import ServiceException from "../exceptions/ServiceException";
 
 export default class LogUtils {
-
   private static readonly NAME = 'oss';
   private static errorCodeFilterList: string[] = [
     OSSErrorCode.NO_SUCH_BUCKET,
@@ -33,5 +32,9 @@ export default class LogUtils {
 
   static debug(detailMessage: string) {
     hilog.debug(0x55, LogUtils.NAME, detailMessage);
+  }
+
+  static info(detailMessage: string) {
+    hilog.info(0x55, LogUtils.NAME, detailMessage);
   }
 }

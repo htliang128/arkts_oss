@@ -13,17 +13,26 @@ export default class FileInputStream extends InputStream {
   private markPosition: number = 0;
   private readLimitPosition: number = 0;
 
-  constructor(path: string) {
+  constructor(path: string);
+  constructor(file: fs.File);
+  constructor(arg: string | fs.File) {
     super();
-    if (!FileUtil.isFileExist(path)) {
-      throw new FileNotFoundException(`${path} is not a file or directory.`);
+    if (typeof arg === 'string') {
+      let path = arg;
+      if (!FileUtil.isFileExist(path)) {
+        throw new FileNotFoundException(`${path} is not a file or directory.`);
+      }
+      if (!FileUtil.isFile(path)) {
+        throw new FileNotFoundException(`${path} is not a file .`);
+      }
+      this.file = fs.openSync(path, fs.OpenMode.READ_ONLY);
+      this.fd = this.file.fd;
+      this.size = fs.statSync(path).size;
+      return;
     }
-    if (!FileUtil.isFile(path)) {
-      throw new FileNotFoundException(`${path} is not a file .`);
-    }
-    this.file = fs.openSync(path, fs.OpenMode.READ_ONLY);
+    this.file = arg;
     this.fd = this.file.fd;
-    this.size = fs.statSync(path).size;
+    this.size = fs.statSync(this.fd).size;
   }
 
   public read(): number {

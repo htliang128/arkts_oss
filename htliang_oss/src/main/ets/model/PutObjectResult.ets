@@ -2,33 +2,34 @@ import CallbackResult from './CallbackResult';
 import GenericResult from './GenericResult';
 import fs from '@ohos.file.fs';
 import CommonConstant from '../common/CommonConstant';
+import InputStream from '@htliang/java_type/src/main/ets/java/io/InputStream';
 
 export default class PutObjectResult extends GenericResult implements CallbackResult {
   eTag?: string;
   versionId?: string;
-  callbackResponseBody: string = CommonConstant.BLANK;
+  callbackResponseBody?: InputStream;
 
-  public getETag() {
+  public getETag(): string| undefined {
     return this.eTag;
   }
 
-  public setETag(eTag: string) {
+  public setETag(eTag: string):void {
     this.eTag = eTag;
   }
 
-  public getVersionId() {
+  public getVersionId():string|undefined {
     return this.versionId;
   }
 
-  public setVersionId(versionId: string) {
+  public setVersionId(versionId: string):void {
     this.versionId = versionId;
   }
 
-  getCallbackResponseBody(): string {
+  getCallbackResponseBody(): InputStream | undefined {
     return this.callbackResponseBody;
   }
 
-  setCallbackResponseBody(callbackResponseBody: string): void {
-    throw new Error('Method not implemented.');
+  setCallbackResponseBody(callbackResponseBody: InputStream | undefined): void {
+    this.callbackResponseBody = callbackResponseBody;
   }
 }

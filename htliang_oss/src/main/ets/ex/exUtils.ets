@@ -14,6 +14,7 @@ import PutObjectRequest from '../model/PutObjectRequest';
 import DomainConstants from '../common/DomainConstants';
 import ClientBuilderConfiguration from '../ClientBuilderConfiguration';
 import { SignVersion } from '../common/comm/SignVersion';
+import ByteArrayInputStream from '@htliang/java_type/src/main/ets/java/io/ByteArrayInputStream';
 
 export default class ExUtils {
   static async putObject(data: Uint8Array) {
@@ -33,9 +34,8 @@ export default class ExUtils {
 
 
 
-    let putObjectRequest = new PutObjectRequest(bucketName, objectName,undefined,undefined,undefined);
-
-    ossClient.putObject()
+    let putObjectRequest = new PutObjectRequest(bucketName, objectName,new ByteArrayInputStream(data));
+    ossClient.putObject(putObjectRequest);
 
 
 

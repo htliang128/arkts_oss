@@ -39,13 +39,13 @@ export default class ObjectMetadata {
     this.metadata.set(OSSHeaders.LAST_MODIFIED, lastModified);
   }
 
-  getExpirationTime(): Date | null {
+  getExpirationTime(): Date | undefined {
     const expires: ESObject = this.metadata.get(OSSHeaders.EXPIRES);
-    return expires ? DateUtil.parseRfc822Date(expires) : null;
+    return expires ? DateUtil.parseRfc822Date(expires) : undefined;
   }
 
-  getRawExpiresValue(): string | null {
-    return this.metadata.get(OSSHeaders.EXPIRES) || null;
+  getRawExpiresValue(): string | undefined {
+    return this.metadata.get(OSSHeaders.EXPIRES);
   }
 
   setExpirationTime(expirationTime: Date): void {
@@ -61,60 +61,60 @@ export default class ObjectMetadata {
     this.metadata.set(OSSHeaders.CONTENT_LENGTH, contentLength);
   }
 
-  getContentType(): string | null {
-    return this.metadata.get(OSSHeaders.CONTENT_TYPE) || null;
+  getContentType(): string | undefined {
+    return this.metadata.get(OSSHeaders.CONTENT_TYPE);
   }
 
   setContentType(contentType: string): void {
     this.metadata.set(OSSHeaders.CONTENT_TYPE, contentType);
   }
 
-  getContentMD5(): string | null {
-    return this.metadata.get(OSSHeaders.CONTENT_MD5) || null;
+  getContentMD5(): string | undefined {
+    return this.metadata.get(OSSHeaders.CONTENT_MD5);
   }
 
   setContentMD5(contentMD5: string): void {
     this.metadata.set(OSSHeaders.CONTENT_MD5, contentMD5);
   }
 
-  getContentEncoding(): string | null {
-    return this.metadata.get(OSSHeaders.CONTENT_ENCODING) || null;
+  getContentEncoding(): string | undefined {
+    return this.metadata.get(OSSHeaders.CONTENT_ENCODING);
   }
 
   setContentEncoding(encoding: string): void {
     this.metadata.set(OSSHeaders.CONTENT_ENCODING, encoding);
   }
 
-  getCacheControl(): string | null {
-    return this.metadata.get(OSSHeaders.CACHE_CONTROL) || null;
+  getCacheControl(): string | undefined {
+    return this.metadata.get(OSSHeaders.CACHE_CONTROL);
   }
 
   setCacheControl(cacheControl: string): void {
     this.metadata.set(OSSHeaders.CACHE_CONTROL, cacheControl);
   }
 
-  getContentDisposition(): string | null {
-    return this.metadata.get(OSSHeaders.CONTENT_DISPOSITION) || null;
+  getContentDisposition(): string | undefined {
+    return this.metadata.get(OSSHeaders.CONTENT_DISPOSITION);
   }
 
   setContentDisposition(disposition: string): void {
     this.metadata.set(OSSHeaders.CONTENT_DISPOSITION, disposition);
   }
 
-  getETag(): string | null {
-    return this.metadata.get(OSSHeaders.ETAG) || null;
+  getETag(): string | undefined {
+    return this.metadata.get(OSSHeaders.ETAG);
   }
 
-  getServerSideEncryption(): string | null {
-    return this.metadata.get(OSSHeaders.OSS_SERVER_SIDE_ENCRYPTION) || null;
+  getServerSideEncryption(): string | undefined {
+    return this.metadata.get(OSSHeaders.OSS_SERVER_SIDE_ENCRYPTION);
   }
 
   setServerSideEncryption(serverSideEncryption: string): void {
     this.metadata.set(OSSHeaders.OSS_SERVER_SIDE_ENCRYPTION, serverSideEncryption);
   }
 
-  getServerSideEncryptionKeyId(): string | null {
-    return this.metadata.get(OSSHeaders.OSS_SERVER_SIDE_ENCRYPTION_KEY_ID) || null;
+  getServerSideEncryptionKeyId(): string | undefined {
+    return this.metadata.get(OSSHeaders.OSS_SERVER_SIDE_ENCRYPTION_KEY_ID);
   }
 
   setServerSideEncryptionKeyId(serverSideEncryptionKeyId: string): void {
@@ -125,12 +125,12 @@ export default class ObjectMetadata {
     this.metadata.set(OSSHeaders.OSS_SERVER_SIDE_DATA_ENCRYPTION, serverSideDataEncryption);
   }
 
-  getServerSideDataEncryption(): string | null {
-    return this.metadata.get(OSSHeaders.OSS_SERVER_SIDE_DATA_ENCRYPTION) || null;
+  getServerSideDataEncryption(): string | undefined {
+    return this.metadata.get(OSSHeaders.OSS_SERVER_SIDE_DATA_ENCRYPTION);
   }
 
-  getObjectType(): string | null {
-    return this.metadata.get(OSSHeaders.OSS_OBJECT_TYPE) || null;
+  getObjectType(): string | undefined {
+    return this.metadata.get(OSSHeaders.OSS_OBJECT_TYPE);
   }
 
   setObjectAcl(cannedAcl: string): void {
@@ -141,17 +141,17 @@ export default class ObjectMetadata {
     return new Map(this.metadata);
   }
 
-  getRequestId(): string | null {
-    return this.metadata.get(OSSHeaders.OSS_HEADER_REQUEST_ID) || null;
+  getRequestId(): string | undefined {
+    return this.metadata.get(OSSHeaders.OSS_HEADER_REQUEST_ID);
   }
 
-  getVersionId(): string | null {
-    return this.metadata.get(OSSHeaders.OSS_HEADER_VERSION_ID) || null;
+  getVersionId(): string | undefined {
+    return this.metadata.get(OSSHeaders.OSS_HEADER_VERSION_ID);
   }
 
-  getServerCRC(): number | null {
+  getServerCRC(): number | undefined {
     const strSrvCrc: ESObject = this.metadata.get(OSSHeaders.OSS_HASH_CRC64_ECMA);
-    return strSrvCrc ? parseInt(strSrvCrc, 10) : null;
+    return strSrvCrc ? parseInt(strSrvCrc, 10) : undefined;
   }
 
   getObjectStorageClass(): StorageClass {
@@ -159,8 +159,8 @@ export default class ObjectMetadata {
     return storageClassString ? StorageClass.parse(storageClassString) : StorageClass.Standard;
   }
 
-  getObjectRawRestore(): string | null {
-    return this.metadata.get(OSSHeaders.OSS_RESTORE) || null;
+  getObjectRawRestore(): string | undefined {
+    return this.metadata.get(OSSHeaders.OSS_RESTORE);
   }
 
   isRestoreCompleted(): boolean {

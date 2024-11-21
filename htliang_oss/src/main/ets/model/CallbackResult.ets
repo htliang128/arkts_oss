@@ -1,3 +1,4 @@
+import InputStream from '@htliang/java_type/src/main/ets/java/io/InputStream';
 import fs from '@ohos.file.fs';
 
 export default interface CallbackResult {
@@ -6,12 +7,12 @@ export default interface CallbackResult {
    *
    * @returns The ReadableStream instance of the response body.
    */
-  getCallbackResponseBody(): string;
+  getCallbackResponseBody(): InputStream | undefined;
 
   /**
    * Sets the callback response body.
    *
    * @param callbackResponseBody The ReadableStream instance of the response body.
    */
-  setCallbackResponseBody(callbackResponseBody: string): void;
+  setCallbackResponseBody(callbackResponseBody: InputStream): void;
 }

@@ -9,35 +9,35 @@ export default class RequestMessage extends HttpMessage {
   }
 
   /* bucket name */
-  private _bucket: string = "";
+  private _bucket: string | undefined;
 
-  public set bucket(value: string) {
+  public set bucket(value: string | undefined) {
     this._bucket = value;
   }
 
-  public get bucket(): string {
+  public get bucket(): string | undefined {
     return this._bucket;
   }
 
   /* object name */
-  private _key: string = "";
+  private _key: string | undefined;
 
-  public set key(value: string) {
+  public set key(value: string | undefined) {
     this._key = value;
   }
 
-  public get key(): string {
+  public get key(): string | undefined {
     return this._key;
   }
 
   /* The resource path being requested */
-  private _resourcePath: string = "";
+  private _resourcePath: string | undefined;
 
-  public set resourcePath(value: string) {
+  public set resourcePath(value: string | undefined) {
     this._resourcePath = value;
   }
 
-  public get resourcePath(): string {
+  public get resourcePath(): string | undefined {
     return this._resourcePath;
   }
 
@@ -79,13 +79,13 @@ export default class RequestMessage extends HttpMessage {
   }
 
   /* The absolute url to which the request should be sent */
-  private _absoluteUrl: string = "";
+  private _absoluteUrl: string | undefined;
 
-  public set absoluteUrl(value: string) {
+  public set absoluteUrl(value: string | undefined) {
     this._absoluteUrl = value;
   }
 
-  public get absoluteUrl(): string {
+  public get absoluteUrl(): string | undefined {
     return this._absoluteUrl;
   }
 
@@ -121,8 +121,7 @@ export default class RequestMessage extends HttpMessage {
     return this._originalRequest;
   }
 
-  public  isRepeatable():boolean {
+  public isRepeatable(): boolean {
     return this.content === undefined || this.content.markSupported();
   }
-
 }

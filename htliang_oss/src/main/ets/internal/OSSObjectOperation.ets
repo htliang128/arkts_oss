@@ -12,22 +12,36 @@ import fs from '@ohos.file.fs';
 import IOUtils from '../common/utils/IOUtils';
 import ClientException from '../ClientException';
 import Mimetypes from './Mimetypes';
-import RepeatableFileInputStream from '../common/comm/io/RepeatableFileInputStream';
 import ResponseParser from '../common/parser/ResponseParser';
+import ResponseParsers from './ResponseParsers';
+import { ProgressEventType } from '../event/ProgressEventType';
+import InputStream from '@htliang/java_type/src/main/ets/java/io/InputStream';
+import FileInputStream from '@htliang/java_type/src/main/ets/java/io/FileInputStream';
+import AssertUtil from '@htliang/java_type/src/main/ets/java/util/AssertUtil'
+import LogUtils from '../common/utils/LogUtils';
+import Payer from '../model/Payer';
+import OSSHeaders from './OSSHeaders';
 
 export default class OSSObjectOperation extends OSSOperation {
   constructor(serviceClient: ServiceClient, credentialProvider: CredentialsProvider) {
     super(serviceClient, credentialProvider);
   }
 
-  public putObject(putObjectRequest: PutObjectRequest):PutObjectResult {
+  public putObject(putObjectRequest: PutObjectRequest): PutObjectResult {
     CodingUtils.assertParameterNotNull(putObjectRequest, "putObjectRequest");
     let result: PutObjectResult | undefined = undefined;
     if (!OSSObjectOperation.isNeedReturnResponse(putObjectRequest)) {
-      return this.writeObjectInternal(WriteMode.OVERWRITE, putObjectRequest, )
+      result = this.writeObjectInternal(WriteMode.OVERWRITE, putObjectRequest, ResponseParsers.putObjectResponseParser)
+    } else {
+      result =
+        this.writeObjectInternal(WriteMode.OVERWRITE, putObjectRequest, ResponseParsers.putObjectProcessResponseParser)
     }
 
+    if (this.isCrcCheckEnabled()) {
+      OSSUtils.checkChecksum(result.getClientCRC(), result.getServerCRC(), result.getRequestId());
+    }
 
+    return result;
   }
 
   public writeObjectInternal<RequestType extends PutObjectRequest, ResponseType>(
@@ -46,12 +60,12 @@ export default class OSSObjectOperation extends OSSOperation {
     OSSUtils.ensureObjectKeyValid(key);
     OSSUtils.ensureCallbackValid(originalRequest.getCallback());
 
-    let repeatableInputStream: fs.ReadStream | null = null;
+    let repeatableInputStream: InputStream | null = null;
     const fileToUpload = originalRequest.getFile();
 
     if (fileToUpload) {
       if (!IOUtils.checkFile(fileToUpload)) {
-        console.info("Illegal file path: " + fileToUpload.path);
+        LogUtils.info("Illegal file path: " + fileToUpload.path);
         throw new ClientException("Illegal file path: " + fileToUpload.path);
       }
 
@@ -61,9 +75,9 @@ export default class OSSObjectOperation extends OSSOperation {
       }
 
       try {
-        repeatableInputStream = new RepeatableFileInputStream(undefined, fileToUpload);
+        repeatableInputStream = new FileInputStream(fileToUpload.path);
       } catch (ex) {
-        console.log("Cannot locate file to upload: ", ex);
+        LogUtils.logException("Cannot locate file to upload: ", ex);
         throw new ClientException("Cannot locate file to upload: ", ex);
       }
     } else {
@@ -76,23 +90,26 @@ export default class OSSObjectOperation extends OSSOperation {
       }
 
       try {
-        repeatableInputStream = new RepeatableFileInputStream(originalInputStream,undefined);
+        if (!originalInputStream.markSupported()) {
+          throw new Error('Current Version support MARK_SUPPORTED InputStream Only')
+        }
+        repeatableInputStream = originalInputStream;
       } catch (ex) {
-        // logException("Cannot wrap to repeatable input stream: ", ex);
+        LogUtils.logException("Cannot wrap to repeatable input stream: ", ex);
         throw new ClientException("Cannot wrap to repeatable input stream: ", ex);
       }
     }
 
-    const headers: Record<string, string> = {};
-    populateRequestMetadata(headers, metadata);
-    populateRequestCallback(headers, originalRequest.getCallback());
-    populateRequestPayerHeader(headers, originalRequest.getRequestPayer());
-    populateTrafficLimitHeader(headers, originalRequest.getTrafficLimit());
+    const headers: Map<string, string> = new Map<string, string>();
+    OSSUtils.populateRequestMetadata(headers, metadata);
+    OSSUtils.populateRequestCallback(headers, originalRequest.getCallback());
+    OSSObjectOperation.populateRequestPayerHeader(headers, originalRequest.getRequestPayer());
+    OSSObjectOperation.populateTrafficLimitHeader(headers, originalRequest.getTrafficLimit());
 
-    const params: Record<string, string> = {};
-    populateWriteObjectParams(mode, originalRequest, params);
+    const params: Map<string, string> = new Map<string,string>();
+    OSSObjectOperation.populateWriteObjectParams(mode, originalRequest, params);
 
-    const httpRequest = new OSSRequestMessageBuilder(getInnerClient())
+    let httpRequest = new OSSRequestMessageBuilder(getInnerClient())
       .setEndpoint(getEndpoint(originalRequest))
       .setMethod(WriteMode.getMappingMethod(mode))
       .setBucket(bucketName)
@@ -124,6 +141,29 @@ export default class OSSObjectOperation extends OSSOperation {
 
     return result;
   }
+
+  static populateWriteObjectParams<RequestType extends PutObjectRequest>(mode: WriteMode, originalRequest: RequestType,
+    params: Map<string, string>):void {
+    if (mode === WriteMode.OVERWRITE) {
+      return;
+    }
+
+    throw new Error('Current Version support OVERWRITE mode only.')
+    // AssertUtil.assertInstanceOf(originalRequest, A)
+  }
+
+  private static populateRequestPayerHeader(headers: Map<string, string>, payer: Payer | undefined):void {
+    if (payer && payer === Payer.Requester) {
+      headers.set(OSSHeaders.OSS_REQUEST_PAYER, payer.toLowerCase());
+    }
+  }
+
+  private static populateTrafficLimitHeader(headers: Map<string, string>, limit: number | undefined):void {
+    if (limit && limit > 0) {
+      headers.set(OSSHeaders.OSS_HEADER_TRAFFIC_LIMIT, limit.toString());
+    }
+  }
+
 
   public static isNeedReturnResponse(putObjectRequest: PutObjectRequest): boolean {
     return putObjectRequest.getCallback() !== undefined || putObjectRequest.getProcess() !== undefined;

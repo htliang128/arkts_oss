@@ -101,7 +101,8 @@ export class OSSUtils {
 
   private static buildCanonicalHost(endpoint: uri.URI, bucket: string, clientConfig: ClientConfiguration): string {
     const host = endpoint.host;
-    const isCname = clientConfig.isSupportCname() && !OSSUtils.cnameExcludeFilter(host, clientConfig.getCnameExcludeList());
+    const isCname =
+      clientConfig.isSupportCname() && !OSSUtils.cnameExcludeFilter(host, clientConfig.getCnameExcludeList());
 
     return bucket && !isCname && !clientConfig.isSupportCname() ? `${bucket}.${host}` : host;
   }
@@ -300,7 +301,7 @@ export class OSSUtils {
     }
   }
 
-  static populateRequestCallback(headers: Map<string, string>, callback: CallbackInfo): void {
+  static populateRequestCallback(headers: Map<string, string>, callback: CallbackInfo | undefined): void {
     if (callback) {
       const jsonCb = OSSUtils.stringifyCallback(callback);
       const base64Cb = BinaryUtil.toBase64String(BinaryUtil.getUtf8Array(jsonCb));
@@ -316,8 +317,9 @@ export class OSSUtils {
     }
   }
 
-  static checkChecksum(clientChecksum: number | null, serverChecksum: number | null, requestId: string): void {
-    if (clientChecksum !== null && serverChecksum !== null && clientChecksum !== serverChecksum) {
+  static checkChecksum(clientChecksum: number | undefined, serverChecksum: number | undefined,
+    requestId: string = CommonConstant.BLANK): void {
+    if (clientChecksum && serverChecksum && clientChecksum !== serverChecksum) {
       throw new InconsistentException(clientChecksum, serverChecksum, requestId);
     }
   }

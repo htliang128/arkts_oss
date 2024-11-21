@@ -7,9 +7,7 @@ export default class ByteArrayInputStream extends InputStream {
   protected markPos: number = 0;
   protected count: number;
 
-  constructor(buf: ArrayBuffer);
-
-  constructor(buf: Uint8Array);
+  constructor(buf: Uint8Array | ArrayBuffer);
 
   constructor(buf: Uint8Array, offset: number, length: number);
 
