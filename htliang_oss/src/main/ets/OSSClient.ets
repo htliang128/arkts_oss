@@ -9,7 +9,6 @@ import ClientConfiguration from './ClientConfiguration';
 import PutObjectRequest from './model/PutObjectRequest';
 import InputStream from '@htliang/java_type/src/main/ets/java/io/InputStream';
 import { OSSUtils } from './internal/OSSUtils';
-import OSSObjectOperation from './internal/OSSObjectOperation';
 import DefaultCredentialProvider from './common/auth/DefaultCredentialProvider';
 import DefaultServiceClient from './common/comm/DefaultServiceClient';
 import OSSConstants from './internal/OSSConstants';
@@ -20,7 +19,7 @@ export default class OSSClient implements OSS {
   private endpoint?: uri.URI;
   private serviceClient: ServiceClient;
   // private bucketOperation: OSSBucketOperation;
-  private objectOperation?: OSSObjectOperation;
+  // private objectOperation?: OSSObjectOperation;
 
   // private multipartOperation: OSSMultipartOperation;
   // private corsOperation: CORSOperation;
@@ -143,7 +142,7 @@ export default class OSSClient implements OSS {
     }
 
     // this.bucketOperation.setEndpoint(uri);
-    this.objectOperation?.setEndpoint(uri);
+    // this.objectOperation?.setEndpoint(uri);
     // this.multipartOperation.setEndpoint(uri);
     // this.corsOperation.setEndpoint(uri);
     // this.liveChannelOperation.setEndpoint(uri);
@@ -190,7 +189,7 @@ export default class OSSClient implements OSS {
 
   private initOperations(): void {
     // this.bucketOperation = new OSSBucketOperation(this.serviceClient, this.credsProvider);
-    this.objectOperation = new OSSObjectOperation(this.serviceClient, this.credsProvider);
+    // this.objectOperation = new OSSObjectOperation(this.serviceClient, this.credsProvider);
     // this.multipartOperation = new OSSMultipartOperation(this.serviceClient, this.credsProvider);
     // this.corsOperation = new CORSOperation(this.serviceClient, this.credsProvider);
     // this.uploadOperation = new OSSUploadOperation(this.multipartOperation);
@@ -200,7 +199,7 @@ export default class OSSClient implements OSS {
 
   private setSignatureVersionInner(version: SignVersion): void {
     // this.bucketOperation.setSignVersion(version);
-    this.objectOperation?.setSignVersion(version);
+    // this.objectOperation?.setSignVersion(version);
     // this.multipartOperation.setSignVersion(version);
     // this.corsOperation.setSignVersion(version);
     // this.liveChannelOperation.setSignVersion(version);
@@ -208,7 +207,7 @@ export default class OSSClient implements OSS {
 
   public setProduct(product: string): void {
     // this.bucketOperation.setProduct(product);
-    this.objectOperation?.setProduct(product);
+    // this.objectOperation?.setProduct(product);
     // this.multipartOperation.setProduct(product);
     // this.corsOperation.setProduct(product);
     // this.liveChannelOperation.setProduct(product);
@@ -217,7 +216,7 @@ export default class OSSClient implements OSS {
 
   public setRegion(region: string): void {
     // this.bucketOperation.setRegion(region);
-    this.objectOperation?.setRegion(region);
+    // this.objectOperation?.setRegion(region);
     // this.multipartOperation.setRegion(region);
     // this.corsOperation.setRegion(region);
     // this.liveChannelOperation.setRegion(region);
@@ -225,7 +224,7 @@ export default class OSSClient implements OSS {
 
   public setCloudBoxId(cloudBoxId: string): void {
     // this.bucketOperation.setCloudBoxId(cloudBoxId);
-    this.objectOperation?.setCloudBoxId(cloudBoxId);
+    // this.objectOperation?.setCloudBoxId(cloudBoxId);
     // this.multipartOperation.setCloudBoxId(cloudBoxId);
     // this.corsOperation.setCloudBoxId(cloudBoxId);
     // this.liveChannelOperation.setCloudBoxId(cloudBoxId);
@@ -264,7 +263,8 @@ export default class OSSClient implements OSS {
   }
 
   public putObject(request: PutObjectRequest): PutObjectResult{
-    this.objectOperation?.putObject(request);
+    // return this.objectOperation?.putObject(request);
+    return new PutObjectResult();
   }
 
   // public putObject(bucketName: string, key: string, input: InputStream): PutObjectResult;
