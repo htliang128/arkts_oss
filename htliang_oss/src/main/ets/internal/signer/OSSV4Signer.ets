@@ -87,8 +87,8 @@ export default class OSSV4Signer extends OSSSignerBase {
     return sortedMap;
   }
 
-  private buildSortedHeadersMap(map: Map<string, string>): Map<string, string> {
-    const unsortedMap = new Map<string, string>();
+  private filterAndLowercaseHeader(map: TreeMap<string, string>): TreeMap<string, string> {
+    const sortedMap = new TreeMap<string, string>();
     for (const key of map.keys()) {
       let lowerKey = key.toLowerCase();
       if (this.hasSignedHeaders(lowerKey)) {
@@ -97,11 +97,11 @@ export default class OSSV4Signer extends OSSSignerBase {
           continue
         }
 
-        unsortedMap.set(lowerKey, value);
+        sortedMap.set(lowerKey, value);
       }
     }
 
-    return this.sortMap(unsortedMap);
+    return sortedMap;
   }
 
   private resolveAdditionalSignedHeaders(request: RequestMessage, headerNames: Set<string>): void {
@@ -181,7 +181,7 @@ export default class OSSV4Signer extends OSSSignerBase {
     canonicalString += canonicalPart + "\n";
 
     // Canonical Headers + "\n"
-    orderMap = request.headers;
+    orderMap = this.filterAndLowercaseHeader(request.headers);
     canonicalPart = "";
     orderMap.forEach((value: string, key: string) => {
       canonicalPart += key + ":" + value.trim() + "\n";

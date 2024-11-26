@@ -1,10 +1,8 @@
 import RequestMessage from '../common/comm/RequestMessage'
 import { buffer, uri } from '@kit.ArkTS';
-import { HttpMethod } from '../common/comm/HttpMethod';
 import BinaryUtil from '../common/utils/BinaryUtil';
 import DateUtil from '../common/utils/DateUtil';
 import OSSSignerParams from '../internal/signer/OSSSignerParams';
-import BasicCredentials from '../common/auth/Credentials';
 import OSSV4Signer from '../internal/signer/OSSV4Signer';
 import axios, { AxiosHeaders, RawAxiosRequestHeaders } from '@ohos/axios';
 import { Request } from './AllIn';
@@ -15,6 +13,8 @@ import DomainConstants from '../common/DomainConstants';
 import ClientBuilderConfiguration from '../ClientBuilderConfiguration';
 import { SignVersion } from '../common/comm/SignVersion';
 import ByteArrayInputStream from '@htliang/java_type/src/main/ets/java/io/ByteArrayInputStream';
+import { http } from '@kit.NetworkKit';
+import BasicCredentials from '../common/auth/BasicCredentials';
 
 export default class ExUtils {
   static async putObject(data: Uint8Array) {
@@ -44,7 +44,7 @@ export default class ExUtils {
     reqMsg.resourcePath = '/lhongtao20240912/new.txt'
     reqMsg.endpoint = new uri.URI('lhongtao20240912.oss-cn-guangzhou.aliyuncs.com');
     reqMsg.key = 'new.txt';
-    reqMsg.method = HttpMethod.PUT;
+    reqMsg.method = http.RequestMethod.PUT;
     reqMsg.addHeader('Cache-Control', 'no-cache');
     reqMsg.addHeader('Content-Disposition', 'attachment; filename="new.txt"');
     reqMsg.addHeader('Content-Encoding', 'identity');

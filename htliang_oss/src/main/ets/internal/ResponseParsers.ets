@@ -5,6 +5,8 @@ import PutObjectResult from "../model/PutObjectResult";
 import OSSHeaders from "./OSSHeaders";
 import { OSSUtils } from "./OSSUtils";
 import CheckedInputStream from '@htliang/java_type/src/main/ets/java/util/zip/CheckedInputStream';
+import OSSErrorResult from './model/OSSErrorResult';
+import DomParser from '../aa/DomParser';
 
 namespace ResponseParsers {
   export class PutObjectResponseParser implements ResponseParser<PutObjectResult> {
@@ -31,6 +33,39 @@ namespace ResponseParsers {
       result.setCallbackResponseBody(response.content);
       result.setResponse(response);
       return result;
+    }
+  }
+
+  export class ErrorResponseParser implements ResponseParser<OSSErrorResult> {
+    parse(response: ResponseMessage): OSSErrorResult {
+      try {
+        let errResponse = response.getErrorResponseAsString();
+
+        return this.parseErrorResponse(errResponse);
+      } finally {
+        safeCloseResponse(response);
+      }
+    }
+
+    parseErrorResponse(errResponse: string | null): OSSErrorResult {
+      let ossErrorResult = new OSSErrorResult();
+      if (!errResponse) {
+        return ossErrorResult;
+      }
+
+      let root = DomParser.getXmlRootElement(e);
+      if (!root) {
+        return ossErrorResult;
+      }
+      ossErrorResult.Code = root.getChildText("Code");
+      ossErrorResult.Message = root.getChildText("Message");
+      ossErrorResult.RequestId = root.getChildText("RequestId");
+      ossErrorResult.HostId = root.getChildText("HostId");
+      ossErrorResult.ResourceType = root.getChildText("ResourceType");
+      ossErrorResult.Method = root.getChildText("Method");
+      ossErrorResult.Header = root.getChildText("Header");
+      ossErrorResult.EC = root.getChildText("EC");
+      return ossErrorResult;
     }
   }
 
@@ -69,6 +104,7 @@ namespace ResponseParsers {
   }
 
   export const putObjectResponseParser = new PutObjectResponseParser();
+
   export const putObjectProcessResponseParser = new PutObjectProcessResponseParser();
 }
 

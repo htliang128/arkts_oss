@@ -1,5 +1,7 @@
 import ClientErrorCode from "../../ClientErrorCode";
 import ClientException from "../../ClientException";
+import OSSErrorResult from "../../internal/model/OSSErrorResult";
+import OSSException from "../exceptions/OSSException";
 
 export default class ExceptionFactory {
   public static createNetworkException(ex: Error): ClientException {
@@ -74,4 +76,9 @@ export default class ExceptionFactory {
 
     return new ClientException(ex.message, errorCode, requestId, ex);
   }
+
+  public static  createOSSException( errorResult:OSSErrorResult,  rawResponseError:string) :OSSException{
+  return new OSSException(errorResult.Message, errorResult.Code, errorResult.RequestId, errorResult.HostId,
+  errorResult.Header, errorResult.ResourceType, errorResult.Method, rawResponseError, null, errorResult.EC);
+}
 }
