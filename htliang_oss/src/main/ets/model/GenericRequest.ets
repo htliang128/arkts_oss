@@ -1,6 +1,7 @@
+import { WebServiceRequest } from '../internal/model/WebServiceRequest';
 import Payer from './Payer';
 
-class GenericRequest {
+class GenericRequest extends WebServiceRequest{
   private bucketName?: string;
   private key?: string;
   private versionId?: string;
@@ -15,6 +16,7 @@ class GenericRequest {
   constructor(bucketName: string, key: string, versionId: string);
 
   constructor(bucketName?: string, key?: string, versionId?: string) {
+    super();
     this.bucketName = bucketName;
     this.key = key;
     this.versionId = versionId;

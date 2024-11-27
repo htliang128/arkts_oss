@@ -2,6 +2,7 @@ import HttpMessage from './HttpMessage';
 import uri from '@ohos.uri'
 import { WebServiceRequest } from '../../internal/model/WebServiceRequest';
 import { http } from '@kit.NetworkKit';
+import { TreeMap } from '@kit.ArkTS';
 
 export default class RequestMessage extends HttpMessage {
   private bucket?: string;
@@ -9,7 +10,7 @@ export default class RequestMessage extends HttpMessage {
   private resourcePath?: string;
   private endpoint?: uri.URI;
   private method: http.RequestMethod = http.RequestMethod.GET;
-  private parameters: Map<string, string> = new Map<string, string>();
+  private parameters: TreeMap<string, string> = new TreeMap<string, string>();
   private absoluteUrl?: string;
   private useUrlSignature: boolean = false;
   private useChunkEncoding: boolean = false;
@@ -61,11 +62,11 @@ export default class RequestMessage extends HttpMessage {
     return this.method;
   }
 
-  public setParameters(value: Map<string, string>) {
+  public setParameters(value: TreeMap<string, string>) {
     this.parameters = value;
   }
 
-  public getParameters(): Map<string, string> {
+  public getParameters(): TreeMap<string, string> {
     return this.parameters;
   }
 

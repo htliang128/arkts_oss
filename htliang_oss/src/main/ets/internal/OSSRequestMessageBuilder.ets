@@ -24,7 +24,7 @@ export class OSSRequestMessageBuilder {
     this.innerClient = innerClient;
   }
 
-  setEndpoint(endpoint: uri.URI): OSSRequestMessageBuilder {
+  setEndpoint(endpoint: uri.URI | undefined): OSSRequestMessageBuilder {
     this.endpoint = endpoint;
     return this;
   }

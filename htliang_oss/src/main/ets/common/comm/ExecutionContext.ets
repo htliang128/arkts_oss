@@ -4,13 +4,14 @@ import OSSConstants from '../../internal/OSSConstants';
 import RequestHandler from './RequestHandler';
 import { RequestSigner } from '../auth/RequestSigner';
 import ResponseHandler from './ResponseHandler';
+import { LinkedList } from '@kit.ArkTS';
 
 
 export class ExecutionContext {
   private signer: RequestSigner | undefined;
-  private requestHandlers: RequestHandler[] = [];
-  private responseHandlers: ResponseHandler[] = [];
-  private signerHandlers: RequestSigner[] = [];
+  private requestHandlers: LinkedList<RequestHandler> = new LinkedList();
+  private responseHandlers: LinkedList<ResponseHandler> = new LinkedList();
+  private signerHandlers: LinkedList<RequestSigner> = new LinkedList();
   private charset: string = OSSConstants.DEFAULT_CHARSET_NAME;
   private retryStrategy: RetryStrategy | undefined;
   private credentials: Credentials | undefined;
@@ -39,27 +40,53 @@ export class ExecutionContext {
     this.signer = signer;
   }
 
-  public getResponseHandlers(): ResponseHandler[] {
+  public getResponseHandlers(): LinkedList<ResponseHandler> {
     return this.responseHandlers;
   }
 
   public addResponseHandler(handler: ResponseHandler): void {
-    this.responseHandlers.push(handler);
+    this.responseHandlers.add(handler);
   }
 
-  // Similar methods for inserting and removing response handlers
+  public insertResponseHandler(position: number, handler: ResponseHandler): void {
+    this.responseHandlers.insert(position, handler);
+  }
 
-  public getRequestHandlers(): RequestHandler[] {
+  public removeResponseHandler(handler: ResponseHandler): void {
+    this.responseHandlers.remove(handler);
+  }
+
+  public getRequestHandlers(): LinkedList<RequestHandler> {
     return this.requestHandlers;
   }
 
-  // Similar methods for adding, inserting, and removing request handlers
+  public addRequestHandlers(handler: RequestHandler): void {
+    this.requestHandlers.add(handler);
+  }
 
-  public getSignerHandlers(): RequestSigner[] {
+  public insertRequestHandler(position: number, handler: RequestHandler): void {
+    this.requestHandlers.insert(position, handler);
+  }
+
+  public removeRequestHandler(handler: RequestHandler): void {
+    this.requestHandlers.remove(handler);
+  }
+
+  public getSignerHandlers(): LinkedList<RequestSigner> {
     return this.signerHandlers;
   }
 
-  // Similar methods for adding, inserting, and removing signer handlers
+  public addSignerHandler(handler: RequestSigner): void {
+    this.signerHandlers.add(handler);
+  }
+
+  public insertSignerHandler(position: number, handler: RequestSigner): void {
+    this.signerHandlers.insert(position, handler);
+  }
+
+  public removeSignerHandler(handler: RequestSigner): void {
+    this.signerHandlers.remove(handler);
+  }
 
   public getCredentials(): Credentials | undefined {
     return this.credentials;

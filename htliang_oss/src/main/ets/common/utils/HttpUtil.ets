@@ -1,6 +1,7 @@
 import StringUtils from './StringUtils';
 import util from '@ohos.util';
 import { TreeMap } from '@kit.ArkTS';
+import CommonConstant from '../CommonConstant';
 
 export default class HttpUtil {
   private static readonly ENCODED_CHARACTERS_WITH_SLASHES: string[] = ["+", "*", "%7E", "%2F"];
@@ -66,15 +67,19 @@ export default class HttpUtil {
     }).join('');
   }
 
-  public static paramToQueryString(params: Map<string, string>, charset: string): string | null {
-    if (params == null || params.size === 0) {
-      return null;
+  public static paramToQueryString(params: TreeMap<string, string>, charset: string): string {
+    if (params.isEmpty()) {
+      return CommonConstant.BLANK;
     }
 
     let paramString: string = "";
     let first: boolean = true;
 
     params.forEach((value, key) => {
+      if (!key) {
+        return;
+      }
+
       if (!first) {
         paramString += "&";
       }

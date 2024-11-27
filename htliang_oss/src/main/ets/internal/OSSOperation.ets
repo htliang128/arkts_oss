@@ -22,6 +22,13 @@ import ResponseParsers from './ResponseParsers';
 import NoRetryStrategy from '../common/comm/NoRetryStrategy';
 import RequestHandler from '../common/comm/RequestHandler';
 import ResponseHandler from '../common/comm/ResponseHandler';
+import RequestChecksumHandler from '../common/comm/RequestChecksumHanlder';
+import ResponseChecksumHandler from '../common/comm/ResponseChecksumHandler';
+import ExceptionFactory from '../common/utils/ExceptionFactory';
+import ResponseParseException from '../common/parser/ResponseParseException';
+import LogUtils from '../common/utils/LogUtils';
+import CodingUtils from '../common/utils/CodingUtils';
+import { LinkedList } from '@kit.ArkTS';
 
 export default abstract class OSSOperation {
   protected product: string;
@@ -58,7 +65,7 @@ export default abstract class OSSOperation {
     this.region = region;
   }
 
-  getEndpoint(request?: WebServiceRequest): uri.URI | null {
+  getEndpoint(request?: WebServiceRequest): uri.URI | undefined {
     const reqEndpoint = request?.getEndpoint();
     if (!reqEndpoint) {
       return this.getEndpoint();
@@ -112,38 +119,23 @@ export default abstract class OSSOperation {
   }
 
   protected async doOperation<T>(request: RequestMessage, parser: ResponseParser<T>, bucketName: string, key: string,
-    keepResponseOpen = false, requestHandlers: RequestHandler[] = [],
-    responseHandlers: ResponseHandler[] = []): Promise<T> {
-    let span: Span | null = null;
-    if (this.client.getClientConfiguration().isTracerEnabled()) {
-      const tracer = AlibabaCloudTracerProvider.getInstance().getTracer();
-      const attributes = new AlibabaCloudAttributesBuilder()
-        .put("alibaba.cloud.service", this.getProduct())
-        .put("alibaba.cloud.signature_version", this.client.getClientConfiguration().getSignatureVersion().toString())
-        .put("alibaba.cloud.resource.type", "OSS")
-        .put("http.request.method", request.getMethod().name())
-        .build();
-
-      const spanBuilder = tracer.spanBuilder(bucketName);
-      if (spanBuilder) {
-        span = spanBuilder.setAllAttributes(attributes).startSpan();
-      }
-    }
+    keepResponseOpen = false, requestHandlers: LinkedList<RequestHandler> = new LinkedList<RequestHandler>(),
+    responseHandlers: LinkedList<ResponseHandler> = new LinkedList<ResponseHandler>()): Promise<T> {
 
     const originalRequest = request.getOriginalRequest();
     request.getHeaders().setAll(this.client.getClientConfiguration().getDefaultHeaders());
-    request.getHeaders().setAll(originalRequest.getHeaders());
-    request.getParameters().setAll(originalRequest.getParameters());
+    request.getHeaders().setAll(originalRequest?.getHeaders());
+    request.getParameters().setAll(originalRequest?.getParameters());
 
     const context = this.createDefaultContext(request.getMethod(), bucketName, key, originalRequest);
 
-    context.addRequestHandler(new RequestProgressHandler());
-    requestHandlers.forEach(handler => context.addRequestHandler(handler));
+    // todo context.addRequestHandlers(new RequestProgressHandler());
+    requestHandlers.forEach(handler => context.addRequestHandlers(handler));
     if (this.client.getClientConfiguration().isCrcCheckEnabled()) {
-      context.addRequestHandler(new RequestChecksumHandler());
+      context.addRequestHandlers(new RequestChecksumHandler());
     }
 
-    context.addResponseHandler(new ResponseProgressHandler(originalRequest));
+    // todo context.addResponseHandler(new ResponseProgressHandler(originalRequest));
     responseHandlers.forEach(handler => context.addResponseHandler(handler));
     if (this.client.getClientConfiguration().isCrcCheckEnabled()) {
       context.addResponseHandler(new ResponseChecksumHandler());
@@ -156,32 +148,33 @@ export default abstract class OSSOperation {
     try {
       response = await this.send(request, context, keepResponseOpen);
       return parser.parse(response);
-    } catch (rpe) {
-      const oe = ExceptionFactory.createInvalidResponseException(response?.getRequestId() || '', rpe.message, rpe);
-      this.logException("Unable to parse response error: ", rpe);
-      span?.setAttribute("alibaba.cloud.error.code", "ParseResponseError");
-      throw oe;
-    }
-    catch(e) {
-      if (e instanceof OSSException) {
-        span?.setAttribute("alibaba.cloud.error.code", e.getErrorCode());
-        span?.setAttribute("alibaba.cloud.request_id", e.getRequestId());
-      } else if (e instanceof ClientException) {
-        span?.setAttribute("alibaba.cloud.error.code", e.getErrorCode());
+    } catch (err) {
+      if (err instanceof ResponseParseException) {
+        const invalidResponseException =
+          ExceptionFactory.createInvalidResponseException(response?.getRequestId() || '', err.message, err as Error);
+        LogUtils.logException("Unable to parse response error: ", err as Error);
+        // span?.setAttribute("alibaba.cloud.error.code", "ParseResponseError");
+        throw invalidResponseException;
       }
-      throw e;
+      throw err as Error;
     }
-
-    finally
-    {
-      if (span) {
-        if (response) {
-          span.setAttribute("alibaba.cloud.request_id", response.getRequestId());
-          span.setAttribute("http.response.status_code", String(response.getStatusCode()));
-        }
-        span.end();
-      }
-    }
+    // catch(e) {
+    //   if (e instanceof OSSException) {
+    //     span?.setAttribute("alibaba.cloud.error.code", e.getErrorCode());
+    //     span?.setAttribute("alibaba.cloud.request_id", e.getRequestId());
+    //   } else if (e instanceof ClientException) {
+    //     span?.setAttribute("alibaba.cloud.error.code", e.getErrorCode());
+    //   }
+    //   throw e;
+    // } finally {
+    //   if (span) {
+    //     if (response) {
+    //       span.setAttribute("alibaba.cloud.request_id", response.getRequestId());
+    //       span.setAttribute("http.response.status_code", String(response.getStatusCode()));
+    //     }
+    //     span.end();
+    //   }
+    // }
   }
 
   private createSigner(bucketName: string, key: string, creds: Credentials,
@@ -190,8 +183,8 @@ export default abstract class OSSOperation {
 
     const params = new OSSSignerParams(resourcePath, creds);
     params.setProduct(this.product);
-    params.setRegion(this.region);
-    params.setCloudBoxId(this.cloudBoxId);
+    params.setRegion(this.getRegion());
+    params.setCloudBoxId(this.getCloudBoxId());
     params.setTickOffset(config.getTickOffset());
     return OSSSignerBase.createRequestSigner(this.signVersion || config.getSignatureVersion(), params);
   }
@@ -200,8 +193,8 @@ export default abstract class OSSOperation {
     originalRequest?: WebServiceRequest): ExecutionContext {
     const context = new ExecutionContext();
     const credentials = this.credsProvider.getCredentials();
-    this.assertParameterNotNull(credentials, "credentials");
-    context.setCharset(DEFAULT_CHARSET_NAME);
+    CodingUtils.assertParameterNotNull(credentials, "credentials");
+    context.setCharset(OSSConstants.DEFAULT_CHARSET_NAME);
     context.setSigner(this.createSigner(bucketName, key, credentials, this.client.getClientConfiguration()));
     context.addResponseHandler(OSSOperation.errorResponseHandler);
     if (method === http.RequestMethod.POST && !this.isRetryablePostRequest(originalRequest)) {
@@ -217,21 +210,11 @@ export default abstract class OSSOperation {
     return context;
   }
 
-  protected isRetryablePostRequest(request: WebServiceRequest): boolean {
+  protected isRetryablePostRequest(request: WebServiceRequest | undefined): boolean {
     return false;
   }
 
   private safeCloseResponse(response: ResponseMessage): void {
     // Implement safe closing logic for the response
-  }
-
-  private logException(message: string, error: Error): void {
-    console.error(message, error);
-  }
-
-  private assertParameterNotNull(param: ESObject, paramName: string): void {
-    if (param == null) {
-      throw new Error(`${paramName} should not be null.`);
-    }
   }
 }

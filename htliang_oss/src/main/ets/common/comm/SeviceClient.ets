@@ -19,6 +19,7 @@ import ResponseHandler from './ResponseHandler';
 import RequestHandler from './RequestHandler';
 import HttpHeaders from '../utils/HttpHeaders';
 import { http } from '@kit.NetworkKit';
+import { LinkedList } from '@kit.ArkTS';
 
 function sleepCallback(delay: number, callback: () => void) {
   setTimeout(callback, delay);
@@ -55,7 +56,7 @@ export abstract class ServiceClient {
   public async sendRequestImpl(request: RequestMessage, context: ExecutionContext): Promise<ResponseMessage> {
     let retryStrategy: RetryStrategy = context.getRetryStrategy() ?? this.getDefaultRetryStrategy();
     // Sign the request if a signer provided.
-    if (context.getSigner() && !request.useUrlSignature) {
+    if (context.getSigner() && !request.getUseUrlSignature()) {
       context.getSigner()?.sign(request);
     }
 
@@ -64,7 +65,7 @@ export abstract class ServiceClient {
       signer.sign(request);
     })
 
-    let requestContent = request.content;
+    let requestContent = request.getContent();
     if (requestContent && requestContent.markSupported()) {
       requestContent.mark(OSSConstants.DEFAULT_STREAM_BUFFER_SIZE);
     }
@@ -79,7 +80,7 @@ export abstract class ServiceClient {
           if (requestContent && requestContent.markSupported()) {
             try {
               requestContent.reset();
-              request.content = requestContent;
+              request.setContent(requestContent);
             } catch (e) {
               if (e instanceof IOException) {
                 LogUtils.logException("Failed to reset the request input stream: ", e as Error);
@@ -122,7 +123,7 @@ export abstract class ServiceClient {
         }
         if (e instanceof ServiceException) {
           LogUtils.logException("[Server]Unable to execute HTTP request: ", e as Error,
-            request ? request.originalRequest?.isLogEnabled() : true);
+            request ? request.getOriginalRequest()?.isLogEnabled() : true);
 
           // Notice that the response should not be closed in the
           // finally block because if the request is successful,
@@ -134,7 +135,7 @@ export abstract class ServiceClient {
           }
         } else if (e instanceof ClientException) {
           LogUtils.logException("[Client]Unable to execute HTTP request: ", e as Error,
-            request ? request.originalRequest?.isLogEnabled() : true);
+            request ? request.getOriginalRequest()?.isLogEnabled() : true);
 
           this.closeResponseSilently(response);
 
@@ -144,7 +145,7 @@ export abstract class ServiceClient {
         }
 
         LogUtils.logException("[UNKNOWN]Unable to execute HTTP request: ", e as Error,
-          request ? request.originalRequest?.isLogEnabled() : true);
+          request ? request.getOriginalRequest()?.isLogEnabled() : true);
 
         this.closeResponseSilently(response);
 
@@ -159,47 +160,48 @@ export abstract class ServiceClient {
 
   private buildRequest(requestMessage: RequestMessage, context: ExecutionContext): Request {
     let request = new Request();
-    request.setMethod(requestMessage.method);
-    request.setUseChunkEncoding(requestMessage.useChunkEncoding);
+    request.setMethod(requestMessage.getMethod());
+    request.setUseChunkEncoding(requestMessage.getUseChunkEncoding());
 
-    if (requestMessage.useUrlSignature) {
-      request.setUrl(requestMessage.absoluteUrl);
+    if (requestMessage.getUseUrlSignature()) {
+      request.setUrl(requestMessage.getAbsoluteUrl());
       request.setUseUrlSignature(true);
 
-      request.content = requestMessage.content;
-      request.contentLength = requestMessage.contentLength;
-      request.headers = requestMessage.headers;
+      request.setContent(requestMessage.getContent());
+      request.setContentLength(requestMessage.getContentLength());
+      request.setHeaders(requestMessage.getHeaders());
 
       return request;
     }
 
-    request.headers = requestMessage.headers;
+    request.setHeaders(requestMessage.getHeaders());
     // The header must be converted after the request is signed,
     // otherwise the signature will be incorrect.
-    if (!request.headers.isEmpty()) {
-      HttpUtil.convertHeaderCharsetToIso88591(request.headers);
+    if (!request.getHeaders().isEmpty()) {
+      HttpUtil.convertHeaderCharsetToIso88591(request.getHeaders());
     }
 
     const delimiter = "/";
-    let uri = requestMessage.endpoint ? requestMessage.endpoint.toString() : CommonConstant.BLANK;
-    if (!uri.endsWith(delimiter) && (requestMessage.resourcePath.length === 0
-      || !requestMessage.resourcePath.startsWith(delimiter))) {
+    let endpoint = requestMessage.getEndpoint();
+    let uri = endpoint ? endpoint.toString() : CommonConstant.BLANK;
+    let resourcePath = requestMessage.getResourcePath() ?? CommonConstant.BLANK;
+    if (!uri.endsWith(delimiter) && (resourcePath.length === 0 || !resourcePath.startsWith(delimiter))) {
       uri += delimiter;
     }
 
-    if (requestMessage.resourcePath.length > 0) {
-      uri += requestMessage.resourcePath;
+    if (resourcePath.length > 0) {
+      uri += resourcePath;
     }
 
-    let paramString = HttpUtil.paramToQueryString(requestMessage.parameters, context.getCharset());
+    let paramString = HttpUtil.paramToQueryString(requestMessage.getParameters(), context.getCharset());
 
     /*
      * For all non-POST requests, and any POST requests that already have a
      * payload, we put the encoded params directly in the URI, otherwise,
      * we'll put them in the POST request's payload.
      */
-    let requestHasNoPayload: boolean = requestMessage.content !== undefined;
-    let requestIsPost: boolean = requestMessage.method === http.RequestMethod.POST;
+    let requestHasNoPayload: boolean = requestMessage.getContent() !== undefined;
+    let requestIsPost: boolean = requestMessage.getMethod() === http.RequestMethod.POST;
     let putParamsInUri: boolean = !requestIsPost || requestHasNoPayload;
     if (paramString !== null && putParamsInUri) {
       uri += "?" + paramString;
@@ -207,33 +209,33 @@ export abstract class ServiceClient {
 
     request.setUrl(uri);
 
-    if (requestIsPost && !requestMessage.content && paramString !== null) {
+    if (requestIsPost && !requestMessage.getContent() && paramString !== null) {
       // Put the param string to the request body if POSTing and
       // no content.
       try {
         let buf: Uint8Array = new Uint8Array(BinaryUtil.encodeToBuffer(paramString, context.getCharset()).buffer);
         let content = new ByteArrayInputStream(buf);
-        request.content = content;
-        request.contentLength = buf.length;
+        request.setContent(content);
+        request.setContentLength(buf.length);
       } catch (e) {
         throw new RuntimeException(
           `Encoding failed due to: ${(e as Error).message}`);
       }
     } else {
-      request.content = requestMessage.content;
-      request.contentLength = requestMessage.contentLength;
+      request.setContent(requestMessage.getContent());
+      request.setContentLength(requestMessage.getContentLength());
     }
 
     return request;
   }
 
-  private handleResponse(response: ResponseMessage, responseHandlers: ResponseHandler[]): void {
+  private handleResponse(response: ResponseMessage, responseHandlers: LinkedList<ResponseHandler>): void {
     responseHandlers.forEach((h) => {
       h.handle(response);
     });
   }
 
-  private handleRequest(message: RequestMessage, requestHandlers: RequestHandler[]): void {
+  private handleRequest(message: RequestMessage, requestHandlers: LinkedList<RequestHandler>): void {
     requestHandlers.forEach((h) => {
       h.handle(message);
     });
@@ -283,7 +285,8 @@ export abstract class ServiceClient {
 
   private formatSlowRequestLog(request: RequestMessage, response: ResponseMessage, useTimesMs: number): string {
     return `Request cost ${useTimesMs /
-      1000} seconds, endpoint ${request.endpoint}, resourcePath ${request.resourcePath}, " + "method ${request.method}, Date '${request.headers.get(HttpHeaders.DATE)}', statusCode ${response.getStatusCode()}, requestId ${response.getRequestId()}.`;
+      1000} seconds, endpoint ${request.getEndpoint()}, resourcePath ${request.getResourcePath()}, " + "method ${request.getMethod()}, Date '${request.getHeaders()
+      .get(HttpHeaders.DATE)}', statusCode ${response.getStatusCode()}, requestId ${response.getRequestId()}.`;
   }
 
   protected abstract getDefaultRetryStrategy(): RetryStrategy;
@@ -305,8 +308,8 @@ export class Request extends HttpMessage {
     return this.uri;
   }
 
-  public setUrl(uri: string): void {
-    this.uri = uri;
+  public setUrl(uri: string | undefined): void {
+    this.uri = uri ?? CommonConstant.BLANK;
   }
 
   public getMethod(): http.RequestMethod {

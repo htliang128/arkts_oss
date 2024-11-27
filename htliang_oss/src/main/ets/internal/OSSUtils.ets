@@ -12,6 +12,8 @@ import { CallbackBodyType } from '../model/CallbackBodyType';
 import CodingUtils from '../common/utils/CodingUtils';
 import OSSHeaders from './OSSHeaders';
 import InconsistentException from '../common/exceptions/InconsistentException';
+import { TreeMap } from '@kit.ArkTS';
+import InputStream from '@htliang/java_type/src/main/ets/java/io/InputStream';
 
 export class OSSUtils {
   private static readonly BUCKET_NAMING_CREATION_REGEX = /^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$/;
@@ -99,6 +101,14 @@ export class OSSUtils {
     return new uri.URI(combinedEndpoint);
   }
 
+  static determineInputStreamLength(inputStream: InputStream, hintLength: number): number {
+    if (hintLength <= 0 || !inputStream.markSupported()) {
+      return -1;
+    }
+
+    return hintLength;
+  }
+
   private static buildCanonicalHost(endpoint: uri.URI, bucket: string, clientConfig: ClientConfiguration): string {
     const host = endpoint.host;
     const isCname =
@@ -135,7 +145,7 @@ export class OSSUtils {
     return key.split('/').map(part => HttpUtil.urlEncodeByEncoding(part, 'UTF-8')).join('/');
   }
 
-  static populateRequestMetadata(headers: Map<string, string>, metadata: ObjectMetadata): void {
+  static populateRequestMetadata(headers: TreeMap<string, string>, metadata: ObjectMetadata): void {
     let rawMetadata: ReadonlyMap<string, ESObject> = metadata.getRawMetadata();
     if (rawMetadata) {
       rawMetadata.forEach((value: ESObject, key: string) => {
@@ -301,7 +311,7 @@ export class OSSUtils {
     }
   }
 
-  static populateRequestCallback(headers: Map<string, string>, callback: CallbackInfo | undefined): void {
+  static populateRequestCallback(headers: TreeMap<string, string>, callback: CallbackInfo | undefined): void {
     if (callback) {
       const jsonCb = OSSUtils.stringifyCallback(callback);
       const base64Cb = BinaryUtil.toBase64String(BinaryUtil.getUtf8Array(jsonCb));

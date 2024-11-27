@@ -3,6 +3,7 @@ import { Protocol } from './common/comm/Protocol';
 import RetryStrategy from './common/comm/RetryStrategy';
 import { SignVersion } from './common/comm/SignVersion';
 import VersionInfoUtils from './common/utils/VersionInfoUtils';
+import { TreeMap } from '@kit.ArkTS';
 
 export default class ClientConfiguration {
   public static readonly DEFAULT_USER_AGENT = VersionInfoUtils.getDefaultUserAgent();
@@ -42,7 +43,7 @@ export default class ClientConfiguration {
   protected requestTimeout: number = ClientConfiguration.DEFAULT_REQUEST_TIMEOUT;
   protected requestTimeoutEnabled: boolean = false;
   protected slowRequestsThreshold: number = ClientConfiguration.DEFAULT_SLOW_REQUESTS_THRESHOLD;
-  protected defaultHeaders: Map<string, string> = new Map<string, string>();
+  protected defaultHeaders: TreeMap<string, string> = new TreeMap<string, string>();
   protected crcCheckEnabled: boolean = true;
   protected signerHandlers: RequestSigner[] = [];
   protected signatureVersion: SignVersion = ClientConfiguration.DEFAULT_SIGNATURE_VERSION;
@@ -259,11 +260,11 @@ export default class ClientConfiguration {
     this.slowRequestsThreshold = slowRequestsThreshold;
   }
 
-  getDefaultHeaders(): Map<string, string> {
+  getDefaultHeaders(): TreeMap<string, string> {
     return this.defaultHeaders;
   }
 
-  setDefaultHeaders(defaultHeaders: Map<string, string>): void {
+  setDefaultHeaders(defaultHeaders: TreeMap<string, string>): void {
     this.defaultHeaders = defaultHeaders;
   }
 

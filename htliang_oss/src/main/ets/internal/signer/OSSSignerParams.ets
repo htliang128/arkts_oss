@@ -44,7 +44,7 @@ export default class OSSSignerParams {
     return this.region;
   }
 
-  setRegion(region: string): void {
+  setRegion(region: string | undefined): void {
     this.region = region;
   }
 
@@ -60,7 +60,7 @@ export default class OSSSignerParams {
     return this.cloudBoxId;
   }
 
-  setCloudBoxId(cloudBoxId: string): void {
+  setCloudBoxId(cloudBoxId: string | undefined): void {
     this.cloudBoxId = cloudBoxId;
   }
 
