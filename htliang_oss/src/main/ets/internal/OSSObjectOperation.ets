@@ -14,16 +14,13 @@ import ClientException from '../ClientException';
 import Mimetypes from './Mimetypes';
 import ResponseParser from '../common/parser/ResponseParser';
 import ResponseParsers from './ResponseParsers';
-import { ProgressEventType } from '../event/ProgressEventType';
 import InputStream from '@htliang/java_type/src/main/ets/java/io/InputStream';
 import FileInputStream from '@htliang/java_type/src/main/ets/java/io/FileInputStream';
-import AssertUtil from '@htliang/java_type/src/main/ets/java/util/AssertUtil'
 import LogUtils from '../common/utils/LogUtils';
 import Payer from '../model/Payer';
 import OSSHeaders from './OSSHeaders';
 import { OSSRequestMessageBuilder } from './OSSRequestMessageBuilder';
 import { LinkedList, TreeMap } from '@kit.ArkTS';
-import { WebServiceRequest } from './model/WebServiceRequest';
 import ResponseHandler from '../common/comm/ResponseHandler';
 import OSSCallbackErrorResponseHandler from './OSSCallbackErrorResponseHandler';
 
@@ -32,14 +29,15 @@ export default class OSSObjectOperation extends OSSOperation {
     super(serviceClient, credentialProvider);
   }
 
-  public putObject(putObjectRequest: PutObjectRequest): Promise<PutObjectResult> {
+  public async putObject(putObjectRequest: PutObjectRequest): Promise<PutObjectResult> {
     CodingUtils.assertParameterNotNull(putObjectRequest, "putObjectRequest");
-    let result: Promise<PutObjectResult>;
+    let result: PutObjectResult;
     if (!OSSObjectOperation.isNeedReturnResponse(putObjectRequest)) {
-      result = this.writeObjectInternal(WriteMode.OVERWRITE, putObjectRequest, ResponseParsers.putObjectResponseParser)
-    } else {
       result =
-        this.writeObjectInternal(WriteMode.OVERWRITE, putObjectRequest, ResponseParsers.putObjectProcessResponseParser)
+        await this.writeObjectInternal(WriteMode.OVERWRITE, putObjectRequest, ResponseParsers.putObjectResponseParser)
+    } else {
+      result = await this.writeObjectInternal(WriteMode.OVERWRITE, putObjectRequest,
+        ResponseParsers.putObjectProcessResponseParser)
     }
 
     if (this.isCrcCheckEnabled()) {
@@ -49,7 +47,7 @@ export default class OSSObjectOperation extends OSSOperation {
     return result;
   }
 
-  public writeObjectInternal<RequestType extends PutObjectRequest, ResponseType>(
+  public async writeObjectInternal<RequestType extends PutObjectRequest, ResponseType>(
     mode: WriteMode,
     originalRequest: RequestType,
     responseParser: ResponseParser<ResponseType>
@@ -111,7 +109,7 @@ export default class OSSObjectOperation extends OSSOperation {
     OSSObjectOperation.populateRequestPayerHeader(headers, originalRequest.getRequestPayer());
     OSSObjectOperation.populateTrafficLimitHeader(headers, originalRequest.getTrafficLimit());
 
-    const params: Map<string, string> = new Map<string,string>();
+    const params: TreeMap<string, string> = new TreeMap<string, string>();
     OSSObjectOperation.populateWriteObjectParams(mode, originalRequest, params);
 
     let httpRequest = new OSSRequestMessageBuilder(this.getInnerClient())
@@ -129,15 +127,16 @@ export default class OSSObjectOperation extends OSSOperation {
     const responseHandlers: LinkedList<ResponseHandler> = new LinkedList<ResponseHandler>();
     responseHandlers.add(new OSSCallbackErrorResponseHandler());
 
-    const listener = originalRequest.getProgressListener();
-    let result: Promise<ResponseType>;
+    // const listener = originalRequest.getProgressListener();
+    let result: ResponseType;
 
     try {
       // todo publishProgress(listener, ProgressEventType.TRANSFER_STARTED_EVENT);
       if (!originalRequest.getCallback()) {
-        result = this.doOperation(httpRequest, responseParser, bucketName, key, true);
+        result = await this.doOperation(httpRequest, responseParser, bucketName, key, true);
       } else {
-        result = this.doOperation(httpRequest, responseParser, bucketName, key, true, undefined, responseHandlers);
+        result =
+          await this.doOperation(httpRequest, responseParser, bucketName, key, true, undefined, responseHandlers);
       }
       // todo publishProgress(listener, ProgressEventType.TRANSFER_COMPLETED_EVENT);
     } catch (e) {
@@ -148,8 +147,12 @@ export default class OSSObjectOperation extends OSSOperation {
     return result;
   }
 
+  private isCrcCheckEnabled(): boolean {
+    return this.getInnerClient().getClientConfiguration().isCrcCheckEnabled();
+  }
+
   static populateWriteObjectParams<RequestType extends PutObjectRequest>(mode: WriteMode, originalRequest: RequestType,
-    params: Map<string, string>):void {
+    params: TreeMap<string, string>): void {
     if (mode === WriteMode.OVERWRITE) {
       return;
     }
@@ -158,13 +161,13 @@ export default class OSSObjectOperation extends OSSOperation {
     // AssertUtil.assertInstanceOf(originalRequest, A)
   }
 
-  private static populateRequestPayerHeader(headers: TreeMap<string, string>, payer: Payer | undefined):void {
+  private static populateRequestPayerHeader(headers: TreeMap<string, string>, payer: Payer | undefined): void {
     if (payer && payer === Payer.Requester) {
       headers.set(OSSHeaders.OSS_REQUEST_PAYER, payer.toLowerCase());
     }
   }
 
-  private static populateTrafficLimitHeader(headers: TreeMap<string, string>, limit: number | undefined):void {
+  private static populateTrafficLimitHeader(headers: TreeMap<string, string>, limit: number | undefined): void {
     if (limit && limit > 0) {
       headers.set(OSSHeaders.OSS_HEADER_TRAFFIC_LIMIT, limit.toString());
     }

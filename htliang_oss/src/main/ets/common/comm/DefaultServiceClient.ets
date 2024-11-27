@@ -13,6 +13,7 @@ import { buffer } from "@kit.ArkTS";
 import RequestMessage from "./RequestMessage";
 import ExceptionFactory from "../utils/ExceptionFactory";
 import ClientErrorCode from "../../ClientErrorCode";
+import HttpErr from "../../internal/model/HttpErr";
 
 export default class DefaultServiceClient extends ServiceClient {
   protected static httpRequestFactory: HttpRequestFactory = new HttpRequestFactory();
@@ -48,10 +49,11 @@ export default class DefaultServiceClient extends ServiceClient {
 
     let httpRequest: http.HttpRequest = http.createHttp();
     let httpResponse: http.HttpResponse;
+    let httpRequestOption = httpRequestOptionsBuilder.build();
     try {
-      httpResponse = await httpRequest.request(uri, httpRequestOptionsBuilder.build());
+      httpResponse = await httpRequest.request(uri, httpRequestOption);
     } catch (e) {
-      throw ExceptionFactory.createNetworkException(e as Error);
+      throw ExceptionFactory.createNetworkException(e as HttpErr);
     } finally {
       httpRequest.destroy();
     }

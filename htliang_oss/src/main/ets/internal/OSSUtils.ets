@@ -96,8 +96,8 @@ export class OSSUtils {
     let combinedEndpoint = "";
     combinedEndpoint += `${endpoint.scheme}://`;
     combinedEndpoint += OSSUtils.buildCanonicalHost(endpoint, bucket, clientConfig);
-    combinedEndpoint += parseInt(endpoint.port, 10) <= 0 ? `:${endpoint.port}` : "";
-    combinedEndpoint += endpoint.path;
+    combinedEndpoint += parseInt(endpoint.port, 10) >= 0 ? `:${endpoint.port}` : "";
+    combinedEndpoint += endpoint.path ?? CommonConstant.BLANK;
     return new uri.URI(combinedEndpoint);
   }
 
@@ -191,9 +191,9 @@ export class OSSUtils {
     return strings.join(', ');
   }
 
-  static trimQuotes(s: string | null): string | null {
-    if (s === null) {
-      return null;
+  static trimQuotes(s: string | undefined): string | undefined {
+    if (!s) {
+      return undefined;
     }
 
     s = s.trim();

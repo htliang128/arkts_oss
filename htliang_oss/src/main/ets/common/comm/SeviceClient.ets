@@ -203,7 +203,7 @@ export abstract class ServiceClient {
     let requestHasNoPayload: boolean = requestMessage.getContent() !== undefined;
     let requestIsPost: boolean = requestMessage.getMethod() === http.RequestMethod.POST;
     let putParamsInUri: boolean = !requestIsPost || requestHasNoPayload;
-    if (paramString !== null && putParamsInUri) {
+    if (paramString.length > 0 && putParamsInUri) {
       uri += "?" + paramString;
     }
 

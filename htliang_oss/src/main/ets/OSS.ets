@@ -14,7 +14,7 @@ export default interface OSS {
 
   getConnectionPoolStats(): string;
 
-  putObject(request: PutObjectRequest): PutObjectResult;
+  putObject(request: PutObjectRequest): Promise<PutObjectResult>;
 
   // putObject(bucketName: string, key: string, input: InputStream): PutObjectResult;
 

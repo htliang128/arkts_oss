@@ -1,7 +1,7 @@
 import { http } from "@kit.NetworkKit";
 import { TreeMap } from "@kit.ArkTS";
 
-export default class HttpRequestOptionsBuilder{
+export default class HttpRequestOptionsBuilder {
   constructor() {
   }
 
@@ -10,7 +10,7 @@ export default class HttpRequestOptionsBuilder{
   private expectDataType?: http.HttpDataType;
   private usingCache?: boolean;
   private priority?: number;
-  private header?: TreeMap<string,string>;
+  private header?: TreeMap<string, string>;
   private readTimeout?: number;
   private connectTimeout?: number;
   private usingProtocol?: http.HttpProtocol;
@@ -71,11 +71,11 @@ export default class HttpRequestOptionsBuilder{
   }
 
   // Getter and setter for header
-  getHeader(): TreeMap<string,string> | undefined {
+  getHeader(): TreeMap<string, string> | undefined {
     return this.header;
   }
 
-  setHeader(value: TreeMap<string,string> | undefined): void {
+  setHeader(value: TreeMap<string, string> | undefined): void {
     this.header = value;
   }
 
@@ -197,13 +197,19 @@ export default class HttpRequestOptionsBuilder{
   }
 
   public build(): http.HttpRequestOptions {
+    let jsonString = '{';
+    this.header?.forEach((value, key) => {
+      jsonString += `"${key}":"${value}",`;
+    })
+    jsonString = jsonString.slice(0, -1) + '}';
+
     return {
       method: this.method,
       extraData: this.extraData,
       expectDataType: this.expectDataType,
       usingCache: this.usingCache,
       priority: this.priority,
-      header: this.header,
+      header: JSON.parse(jsonString),
       readTimeout: this.readTimeout,
       connectTimeout: this.connectTimeout,
       usingProtocol: this.usingProtocol,

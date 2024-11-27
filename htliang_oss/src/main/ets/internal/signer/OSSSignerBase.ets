@@ -2,11 +2,9 @@ import Credentials from '../../common/auth/Credentials';
 import { RequestPresigner } from '../../common/auth/RequestPresigner';
 import { RequestSigner } from '../../common/auth/RequestSigner';
 import RequestMessage from '../../common/comm/RequestMessage';
-import { SignVersion } from '../../common/comm/SignVersion';
 import DateUtil from '../../common/utils/DateUtil';
 import OSSHeaders from '../OSSHeaders';
 import OSSSignerParams from './OSSSignerParams';
-import OSSV4Signer from './OSSV4Signer';
 
 
 export default abstract class OSSSignerBase implements RequestSigner, RequestPresigner {
@@ -21,12 +19,12 @@ export default abstract class OSSSignerBase implements RequestSigner, RequestPre
     if (this.signerParams.getTickOffset() != 0) {
       now.setTime(now.getTime() + this.signerParams.getTickOffset());
     }
-    request.headers.set(OSSHeaders.DATE, DateUtil.formatRfc822Date(now));
+    request.getHeaders().set(OSSHeaders.DATE, DateUtil.formatRfc822Date(now));
   }
 
   protected addSecurityTokenHeaderIfNeeded(request: RequestMessage): void {
     let cred: Credentials = this.signerParams.getCredentials();
-    if (cred.useSecurityToken() && !request.useUrlSignature) {
+    if (cred.useSecurityToken() && !request.getUseUrlSignature()) {
       request.addHeader(OSSHeaders.OSS_SECURITY_TOKEN, cred.getSecurityToken());
     }
   }
@@ -48,13 +46,13 @@ export default abstract class OSSSignerBase implements RequestSigner, RequestPre
     this.addAuthorizationHeader(request);
   }
 
-  public static createRequestSigner(version: SignVersion, signerParams: OSSSignerParams): RequestSigner {
-    if (SignVersion.V4 == version) {
-      return new OSSV4Signer(signerParams);
-    }
-
-    throw new Error("only support SignVersion.V4")
-  }
+  // public static createRequestSigner(version: SignVersion, signerParams: OSSSignerParams): RequestSigner {
+  //   if (SignVersion.V4 == version) {
+  //     return new OSSV4Signer(signerParams);
+  //   }
+  //
+  //   throw new Error("only support SignVersion.V4")
+  // }
 
 
   presign(request: RequestMessage): void {

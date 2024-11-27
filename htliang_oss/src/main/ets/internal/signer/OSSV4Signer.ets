@@ -110,7 +110,7 @@ export default class OSSV4Signer extends OSSSignerBase {
     for (const additionalHeader of headerNames) {
       const additionalHeaderKey: string = additionalHeader.toLowerCase();
 
-      for (const header of request.headers.entries()) {
+      for (const header of request.getHeaders().entries()) {
         const headerKey: string = header[0].toLowerCase();
 
         if (headerKey === additionalHeaderKey && !this.hasDefaultSignedHeaders(additionalHeaderKey)) {
@@ -126,8 +126,8 @@ export default class OSSV4Signer extends OSSSignerBase {
     const signedHeaders: Set<string> = this.additionalSignedHeaders;
 
     if (signedHeaders.has(OSSHeaders.HOST.toLowerCase()) &&
-      !request.headers.hasKey(OSSHeaders.HOST)) {
-      request.addHeader(OSSHeaders.HOST, request.endpoint?.host ?? '');
+      !request.getHeaders().hasKey(OSSHeaders.HOST)) {
+      request.addHeader(OSSHeaders.HOST, request.getEndpoint()?.host ?? '');
     }
   }
 
@@ -144,11 +144,11 @@ export default class OSSV4Signer extends OSSSignerBase {
     }
 
     this.requestDateTime = now;
-    request.headers.set(OSSHeaders.OSS_DATE, this.getDateTime());
+    request.getHeaders().set(OSSHeaders.OSS_DATE, this.getDateTime());
   }
 
   private buildCanonicalRequest(request: RequestMessage): string {
-    const method: string = request.method;
+    const method: string = request.getMethod();
     const resourcePath: string = this.signerParams.getResourcePath();
 
     let canonicalString: string = "";
@@ -160,10 +160,13 @@ export default class OSSV4Signer extends OSSSignerBase {
     canonicalString += HttpUtil.urlEncode(resourcePath, true) + SignParameters.NEW_LINE;
 
     // Canonical Query String + "\n"
-    const parameters: Map<string, string> = request.parameters;
+    const parameters: TreeMap<string, string> = request.getParameters();
     let orderMap: TreeMap<string, string> = new TreeMap<string, string>();
     if (parameters) {
       parameters.forEach((value, key) => {
+        if (!key || !value) {
+          return;
+        }
         orderMap.set(HttpUtil.urlEncode(key.trim(), false), HttpUtil.urlEncode(value.trim(), false));
       })
     }
@@ -181,7 +184,7 @@ export default class OSSV4Signer extends OSSSignerBase {
     canonicalString += canonicalPart + "\n";
 
     // Canonical Headers + "\n"
-    orderMap = this.filterAndLowercaseHeader(request.headers);
+    orderMap = this.filterAndLowercaseHeader(request.getHeaders());
     canonicalPart = "";
     orderMap.forEach((value: string, key: string) => {
       canonicalPart += key + ":" + value.trim() + "\n";
@@ -194,7 +197,7 @@ export default class OSSV4Signer extends OSSSignerBase {
     canonicalString += canonicalPartStr + "\n";
 
     // Hashed PayLoad
-    let hashedPayLoad: string | undefined = request.headers.get(OSSHeaders.OSS_CONTENT_SHA256);
+    let hashedPayLoad: string | undefined = request.getHeaders().get(OSSHeaders.OSS_CONTENT_SHA256);
     if (!hashedPayLoad) {
       hashedPayLoad = "UNSIGNED-PAYLOAD";
     }
@@ -267,7 +270,8 @@ export default class OSSV4Signer extends OSSSignerBase {
       if (this.isAnonymous()) {
         return;
       }
-      this.resolveAdditionalSignedHeaders(request, request.originalRequest?.getAdditionalHeaderNames() ?? new Set());
+      this.resolveAdditionalSignedHeaders(request,
+        request.getOriginalRequest()?.getAdditionalHeaderNames() ?? new Set());
       this.addSignedHeaderIfNeeded(request);
       this.addSecurityTokenHeaderIfNeeded(request);
       this.addOSSContentSha256Header(request);

@@ -29,6 +29,7 @@ import ResponseParseException from '../common/parser/ResponseParseException';
 import LogUtils from '../common/utils/LogUtils';
 import CodingUtils from '../common/utils/CodingUtils';
 import { LinkedList } from '@kit.ArkTS';
+import OSSV4Signer from './signer/OSSV4Signer';
 
 export default abstract class OSSOperation {
   protected product: string;
@@ -65,7 +66,14 @@ export default abstract class OSSOperation {
     this.region = region;
   }
 
+  getEndpoint(): uri.URI | undefined;
+
+  getEndpoint(request: WebServiceRequest): uri.URI | undefined;
+
   getEndpoint(request?: WebServiceRequest): uri.URI | undefined {
+    if (!request) {
+      return this.endpoint;
+    }
     const reqEndpoint = request?.getEndpoint();
     if (!reqEndpoint) {
       return this.getEndpoint();
@@ -186,7 +194,8 @@ export default abstract class OSSOperation {
     params.setRegion(this.getRegion());
     params.setCloudBoxId(this.getCloudBoxId());
     params.setTickOffset(config.getTickOffset());
-    return OSSSignerBase.createRequestSigner(this.signVersion || config.getSignatureVersion(), params);
+    // return OSSSignerBase.createRequestSigner(this.signVersion || config.getSignatureVersion(), params);
+    return new OSSV4Signer(params);
   }
 
   protected createDefaultContext(method: http.RequestMethod, bucketName: string, key: string,

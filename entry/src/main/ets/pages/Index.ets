@@ -1,7 +1,4 @@
-import IOUtils from '@htliang/oss/src/main/ets/common/utils/IOUtils'
-import fs from '@ohos.file.fs';
-import { buffer } from '@kit.ArkTS';
-import { BusinessError } from '@kit.BasicServicesKit';
+import ExUtils from '@htliang/oss/src/main/ets/ex/exUtils';
 import BinaryUtil from '@htliang/oss/src/main/ets/common/utils/BinaryUtil';
 
 @Entry
@@ -9,12 +6,9 @@ import BinaryUtil from '@htliang/oss/src/main/ets/common/utils/BinaryUtil';
 struct Index {
   @State message: string = 'Hello World';
 
-  xx() {
-    let xxxxx = 'qwertyuiop[]~-!@#$%^&*()_+ASDFGHJKL:ZXCVBNM<>?1234567890QWERTYUIOP{}asdfghjkl;zxcvbnm,./';
-    let encr = BinaryUtil.sm4Encrypt(xxxxx, '1234');
-    console.log('xxxxxxxxxxxxxxxxxxxxxxxxx:', encr);
-
-
+  async xx() {
+    let txtContent= "现在时间是"+ new Date().toString();
+    await ExUtils.putObject(BinaryUtil.getUtf8Array(txtContent));
   }
 
   build() {

@@ -9,15 +9,15 @@ export default class ClientConfiguration {
   public static readonly DEFAULT_USER_AGENT = VersionInfoUtils.getDefaultUserAgent();
   public static readonly DEFAULT_MAX_RETRIES = 3;
   public static readonly DEFAULT_CONNECTION_REQUEST_TIMEOUT = -1;
-  public static readonly DEFAULT_CONNECTION_TIMEOUT = 50;
-  public static readonly DEFAULT_SOCKET_TIMEOUT = 50;
+  public static readonly DEFAULT_CONNECTION_TIMEOUT = 50 * 1000;
+  public static readonly DEFAULT_SOCKET_TIMEOUT = 50 * 1000;
   public static readonly DEFAULT_MAX_CONNECTIONS = 1024;
   public static readonly DEFAULT_CONNECTION_TTL = -1;
-  public static readonly DEFAULT_IDLE_CONNECTION_TIME = 60;
-  public static readonly DEFAULT_VALIDATE_AFTER_INACTIVITY = 2;
-  public static readonly DEFAULT_THREAD_POOL_WAIT_TIME = 60;
-  public static readonly DEFAULT_REQUEST_TIMEOUT = 5;
-  public static readonly DEFAULT_SLOW_REQUESTS_THRESHOLD = 5;
+  public static readonly DEFAULT_IDLE_CONNECTION_TIME = 60 * 1000;
+  public static readonly DEFAULT_VALIDATE_AFTER_INACTIVITY = 2 * 1000;
+  public static readonly DEFAULT_THREAD_POOL_WAIT_TIME = 60 * 1000;
+  public static readonly DEFAULT_REQUEST_TIMEOUT = 5 * 60 * 1000;
+  public static readonly DEFAULT_SLOW_REQUESTS_THRESHOLD = 5 * 60 * 1000;
   public static readonly DEFAULT_USE_REAPER = true;
   public static readonly DEFAULT_CNAME_EXCLUDE_LIST = "aliyuncs.com,aliyun-inc.com,aliyun.com";
   public static readonly DEFAULT_SIGNATURE_VERSION = SignVersion.V4;
@@ -300,6 +300,14 @@ export default class ClientConfiguration {
       throw new Error('CurrentVersion support V4 only!')
     }
     this.signatureVersion = signatureVersion;
+  }
+
+  withSignatureVersion(signatureVersion: SignVersion): ClientConfiguration {
+    if (signatureVersion !== SignVersion.V4) {
+      throw new Error('CurrentVersion support V4 only!')
+    }
+    this.signatureVersion = signatureVersion;
+    return this;
   }
 
   getTickOffset(): number {

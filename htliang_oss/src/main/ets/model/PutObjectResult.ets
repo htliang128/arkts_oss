@@ -13,7 +13,7 @@ export default class PutObjectResult extends GenericResult implements CallbackRe
     return this.eTag;
   }
 
-  public setETag(eTag: string):void {
+  public setETag(eTag: string | undefined):void {
     this.eTag = eTag;
   }
 

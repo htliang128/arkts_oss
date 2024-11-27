@@ -15,8 +15,9 @@ export default class HttpRequestFactory {
       case http.RequestMethod.POST:
       case http.RequestMethod.PUT:
       case http.RequestMethod.DELETE:
-        if (request.content) {
-          httpRequestOptions.setExtraData(request.content.readNBytes(request.contentLength));
+        let content = request.getContent();
+        if (content) {
+          httpRequestOptions.setExtraData(content.readAllBytes().buffer);
         }
     }
 
@@ -28,7 +29,7 @@ export default class HttpRequestFactory {
 
   private configureRequestHeaders(request: Request, context: ExecutionContext,
     httpRequestOptions: HttpRequestOptionsBuilder): void {
-    request.headers.forEach((value, key) => {
+    request.getHeaders().forEach((value, key) => {
       if (!key) {
         return;
       }

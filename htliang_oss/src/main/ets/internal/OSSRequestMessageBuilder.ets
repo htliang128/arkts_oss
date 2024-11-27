@@ -13,7 +13,7 @@ export class OSSRequestMessageBuilder {
   private bucket?: string;
   private key?: string;
   private headers: TreeMap<string, string> = new TreeMap();
-  private parameters: Map<string, string> = new Map();
+  private parameters: TreeMap<string, string> = new TreeMap();
   private inputStream?: InputStream;
   private inputSize: number = 0;
   private innerClient?: ServiceClient;
@@ -54,7 +54,7 @@ export class OSSRequestMessageBuilder {
     return this;
   }
 
-  setParameters(parameters: Map<string, string>): OSSRequestMessageBuilder {
+  setParameters(parameters: TreeMap<string, string>): OSSRequestMessageBuilder {
     this.parameters = parameters;
     return this;
   }
@@ -101,7 +101,8 @@ export class OSSRequestMessageBuilder {
     let clientConfig = this.innerClient?.getClientConfiguration();
     let sentHeaders: TreeMap<string, string> = new TreeMap<string, string>();
     this.headers.forEach((value, key) => sentHeaders.set(key, value));
-    let sentParameters: Map<string, string> = new Map<string, string>(this.parameters);
+    let sentParameters: TreeMap<string, string> = new TreeMap<string, string>();
+    sentParameters.setAll(this.parameters);
 
     let message = new RequestMessage();
     message.setOriginalRequest(this.originalRequest);

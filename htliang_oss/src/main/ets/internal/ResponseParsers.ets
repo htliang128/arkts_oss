@@ -14,7 +14,7 @@ namespace ResponseParsers {
     parse(response: ResponseMessage): PutObjectResult {
       let result = new PutObjectResult();
       try {
-        result.setETag(OSSUtils.trimQuotes(response.getHeaders().get(OSSHeaders.ETAG)) ?? "");
+        result.setETag(OSSUtils.trimQuotes(response.getHeaders().get(OSSHeaders.ETAG)));
         result.setVersionId(response.getHeaders().get(OSSHeaders.OSS_HEADER_VERSION_ID));
         result.setRequestId(response.getRequestId() ?? "");
         setCRC(result, response);
