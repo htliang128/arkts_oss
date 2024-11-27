@@ -14,10 +14,9 @@ export default class ExUtils {
   static async putObject(data: Uint8Array | fs.File | string): Promise<void> {
     let region = DomainConstants.REGION_CN_GUANGZHOU;
     let endpoint = DomainConstants.PUBLIC_ENDPOINT_CN_GUANGZHOU;
-    let credentialProvider =
-      DefaultCredentialProvider.build("xxx", "xxx", "xxx");
     let bucketName = "xxx";
     let objectName = `new${Date.now()}.txt`;
+    let credentialProvider = DefaultCredentialProvider.build("xxx", "xxx", "xxx");
 
     let ossClient = OSSClientBuilder.create()
       .withEndpoint(`https://${endpoint}`)
@@ -27,11 +26,19 @@ export default class ExUtils {
       .build();
 
     let putObjectRequest = new PutObjectRequest(bucketName, objectName, ExUtils.prepareInputStream(data));
+
     ossClient.putObject(putObjectRequest).then((putObjectResult) => {
       console.log('putObject success, putObjectResult=', JSON.stringify(putObjectResult));
     }).catch((e: Throwable) => {
       console.error("putObject fail for ", JSON.stringify(e))
     });
+
+    // 当然可以用await
+    // try {
+    //   let result = await ossClient.putObject(putObjectRequest);
+    // } catch (e) {
+    //   console.error("putObject fail for ", JSON.stringify(e))
+    // }
   }
 
   static prepareInputStream(data: Uint8Array | fs.File | string): InputStream {
