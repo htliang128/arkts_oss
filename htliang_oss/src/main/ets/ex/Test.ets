@@ -10,7 +10,7 @@ import fs from '@ohos.file.fs';
 import InputStream from '@htliang/java_type/src/main/ets/java/io/InputStream';
 import FileInputStream from '@htliang/java_type/src/main/ets/java/io/FileInputStream';
 
-export default class ExUtils {
+export default class Test {
   static async putObject(data: Uint8Array | fs.File | string): Promise<void> {
     let region = DomainConstants.REGION_CN_GUANGZHOU;
     let endpoint = DomainConstants.PUBLIC_ENDPOINT_CN_GUANGZHOU;
@@ -25,7 +25,7 @@ export default class ExUtils {
       .withRegion(region)
       .build();
 
-    let putObjectRequest = new PutObjectRequest(bucketName, objectName, ExUtils.prepareInputStream(data));
+    let putObjectRequest = new PutObjectRequest(bucketName, objectName, Test.prepareInputStream(data));
 
     ossClient.putObject(putObjectRequest).then((putObjectResult) => {
       console.log('putObject success, putObjectResult=', JSON.stringify(putObjectResult));

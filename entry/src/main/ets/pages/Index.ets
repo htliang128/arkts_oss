@@ -1,4 +1,4 @@
-import ExUtils from '@htliang/oss/src/main/ets/ex/exUtils';
+import Test from '@htliang/oss/src/main/ets/ex/Test';
 import BinaryUtil from '@htliang/oss/src/main/ets/common/utils/BinaryUtil';
 
 @Entry
@@ -8,7 +8,7 @@ struct Index {
 
   async xx() {
     let txtContent= "现在时间是"+ new Date().toString();
-    await ExUtils.putObject(BinaryUtil.getUtf8Array(txtContent));
+    await Test.putObject(BinaryUtil.getUtf8Array(txtContent));
   }
 
   build() {
