@@ -7,14 +7,15 @@ import { OSSUtils } from "./OSSUtils";
 import CheckedInputStream from '@htliang/java_type/src/main/ets/java/util/zip/CheckedInputStream';
 import OSSErrorResult from './model/OSSErrorResult';
 import DomParser from '../aa/DomParser';
+import VoidResult from "../model/VoidResult";
 
 namespace ResponseParsers {
   export class PutObjectResponseParser implements ResponseParser<PutObjectResult> {
     parse(response: ResponseMessage): PutObjectResult {
       let result = new PutObjectResult();
       try {
-        result.setETag(OSSUtils.trimQuotes(response.headers.get(OSSHeaders.ETAG)) ?? "");
-        result.setVersionId(response.headers.get(OSSHeaders.OSS_HEADER_VERSION_ID));
+        result.setETag(OSSUtils.trimQuotes(response.getHeaders().get(OSSHeaders.ETAG)) ?? "");
+        result.setVersionId(response.getHeaders().get(OSSHeaders.OSS_HEADER_VERSION_ID));
         result.setRequestId(response.getRequestId() ?? "");
         setCRC(result, response);
         return result;
@@ -28,11 +29,31 @@ namespace ResponseParsers {
     parse(response: ResponseMessage): PutObjectResult {
       let result = new PutObjectResult();
       result.setRequestId(response.getRequestId() ?? "");
-      result.setETag(OSSUtils.trimQuotes(response.headers.get(OSSHeaders.ETAG)) ?? "");
-      result.setVersionId(response.headers.get(OSSHeaders.OSS_HEADER_VERSION_ID));
-      result.setCallbackResponseBody(response.content);
+      result.setETag(OSSUtils.trimQuotes(response.getHeaders().get(OSSHeaders.ETAG)) ?? "");
+      result.setVersionId(response.getHeaders().get(OSSHeaders.OSS_HEADER_VERSION_ID));
+      result.setCallbackResponseBody(response.getContent());
       result.setResponse(response);
       return result;
+    }
+  }
+
+  export class RequestIdResponseParser implements ResponseParser<VoidResult> {
+    parse(response: ResponseMessage) {
+      try {
+        let result = new VoidResult();
+        result.setResponse(response);
+        result.setRequestId(response.getRequestId());
+        return result;
+      } finally {
+        safeCloseResponse(response);
+      }
+    }
+  }
+
+  export class EmptyResponseParser implements ResponseParser<ResponseMessage> {
+    parse(response: ResponseMessage): ResponseMessage {
+      OSSUtils.safeCloseResponse(response);
+      return response;
     }
   }
 
@@ -47,13 +68,13 @@ namespace ResponseParsers {
       }
     }
 
-    parseErrorResponse(errResponse: string | null): OSSErrorResult {
+    parseErrorResponse(errResponse: string | undefined): OSSErrorResult {
       let ossErrorResult = new OSSErrorResult();
       if (!errResponse) {
         return ossErrorResult;
       }
 
-      let root = DomParser.getXmlRootElement(e);
+      let root = DomParser.getXmlRootElement(errResponse);
       if (!root) {
         return ossErrorResult;
       }
@@ -71,14 +92,14 @@ namespace ResponseParsers {
 
   function setCRC<ResultType extends GenericResult>(result: ResultType, response: ResponseMessage): void {
     const request = response.getRequest();
-    const content = request.content;
+    const content = request.getContent();
     if (content && content instanceof CheckedInputStream) {
       let checkedIs = content as CheckedInputStream;
       result.setClientCRC(checkedIs.getCheckSum().getValue());
     }
 
 
-    const strSrvCrc = response.headers.get(OSSHeaders.OSS_HASH_CRC64_ECMA);
+    const strSrvCrc = response.getHeaders().get(OSSHeaders.OSS_HASH_CRC64_ECMA);
     if (strSrvCrc !== undefined) {
       const bi = BigInt(strSrvCrc);
       result.setServerCRC(Number(bi));
@@ -88,7 +109,7 @@ namespace ResponseParsers {
   function setServerCRC<ResultType extends GenericResult>(result: ResultType, response: ResponseMessage): void {
     const request = response.getRequest();
     if (request !== null) {
-      const strSrvCrc = response.headers.get(OSSHeaders.OSS_HASH_CRC64_ECMA);
+      const strSrvCrc = response.getHeaders().get(OSSHeaders.OSS_HASH_CRC64_ECMA);
       if (strSrvCrc !== undefined) {
         const bi = BigInt(strSrvCrc);
         result.setServerCRC(Number(bi));

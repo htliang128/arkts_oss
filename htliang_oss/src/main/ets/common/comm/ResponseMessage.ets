@@ -10,7 +10,7 @@ export default class ResponseMessage extends HttpMessage {
   private statusCode: number = -1;
   private request: Request;
   private httpResponse?: http.HttpResponse;
-  private errorResponseAsString: string = '';
+  private errorResponseAsString?: string;
 
   constructor(request: Request) {
     super();
@@ -34,7 +34,7 @@ export default class ResponseMessage extends HttpMessage {
   }
 
   getRequestId(): string | undefined {
-    return this.headers.get(OSSHeaders.OSS_HEADER_REQUEST_ID);
+    return this.getHeaders().get(OSSHeaders.OSS_HEADER_REQUEST_ID);
   }
 
   getRequest(): Request {
@@ -45,7 +45,7 @@ export default class ResponseMessage extends HttpMessage {
     return Math.floor(this.statusCode / 100) === Math.floor(ResponseMessage.HTTP_SUCCESS_STATUS_CODE / 100);
   }
 
-  getErrorResponseAsString(): string | null {
+  getErrorResponseAsString(): string | undefined {
     return this.errorResponseAsString;
   }
 

@@ -4,124 +4,109 @@ import { WebServiceRequest } from '../../internal/model/WebServiceRequest';
 import { http } from '@kit.NetworkKit';
 
 export default class RequestMessage extends HttpMessage {
+  private bucket?: string;
+  private key?: string;
+  private resourcePath?: string;
+  private endpoint?: uri.URI;
+  private method: http.RequestMethod = http.RequestMethod.GET;
+  private parameters: Map<string, string> = new Map<string, string>();
+  private absoluteUrl?: string;
+  private useUrlSignature: boolean = false;
+  private useChunkEncoding: boolean = false;
+  private originalRequest?: WebServiceRequest;
+
   constructor() {
     super();
   }
 
-  /* bucket name */
-  private _bucket: string | undefined;
-
-  public set bucket(value: string | undefined) {
-    this._bucket = value;
+  public setBucket(value: string | undefined) {
+    this.bucket = value;
   }
 
-  public get bucket(): string | undefined {
-    return this._bucket;
+  public getBucket(): string | undefined {
+    return this.bucket;
   }
 
-  /* object name */
-  private _key: string | undefined;
-
-  public set key(value: string | undefined) {
-    this._key = value;
+  public setKey(value: string | undefined) {
+    this.key = value;
   }
 
-  public get key(): string | undefined {
-    return this._key;
+  public getKey(): string | undefined {
+    return this.key;
   }
 
-  /* The resource path being requested */
-  private _resourcePath: string | undefined;
 
-  public set resourcePath(value: string | undefined) {
-    this._resourcePath = value;
+  public setResourcePath(value: string | undefined) {
+    this.resourcePath = value;
   }
 
-  public get resourcePath(): string | undefined {
-    return this._resourcePath;
+  public getResourcePath(): string | undefined {
+    return this.resourcePath;
   }
 
-  /* The service endpoint to which this request should be sent */
-  private _endpoint: uri.URI | undefined;
 
-  public set endpoint(value: uri.URI | undefined) {
-    this._endpoint = value;
+  public setEndpoint(value: uri.URI | undefined) {
+    this.endpoint = value;
   }
 
-  public get endpoint(): uri.URI | undefined {
-    return this._endpoint;
+  public getEndpoint(): uri.URI | undefined {
+    return this.endpoint;
   }
 
-  /* The HTTP method to use when sending this request */
-  private _method: http.RequestMethod = http.RequestMethod.GET;
-
-  public set method(value: http.RequestMethod) {
-    this._method = value;
+  public setMethod(value: http.RequestMethod) {
+    this.method = value;
   }
 
-  public get method(): http.RequestMethod {
-    return this._method;
+  public getMethod(): http.RequestMethod {
+    return this.method;
   }
 
-  /* Use a LinkedHashMap to preserve the insertion order. */
-  private _parameters: Map<string, string> = new Map<string, string>();
-
-  public set parameters(value: Map<string, string>) {
-    this._parameters = value;
+  public setParameters(value: Map<string, string>) {
+    this.parameters = value;
   }
 
-  public get parameters(): Map<string, string> {
-    return this._parameters;
+  public getParameters(): Map<string, string> {
+    return this.parameters;
   }
 
   public addParameter(key: string, value: string): void {
-    this._parameters.set(key, value);
+    this.parameters.set(key, value);
   }
 
-  /* The absolute url to which the request should be sent */
-  private _absoluteUrl: string | undefined;
-
-  public set absoluteUrl(value: string | undefined) {
-    this._absoluteUrl = value;
+  public setAbsoluteUrl(value: string | undefined) {
+    this.absoluteUrl = value;
   }
 
-  public get absoluteUrl(): string | undefined {
-    return this._absoluteUrl;
+  public getAbsoluteUrl(): string | undefined {
+    return this.absoluteUrl;
   }
 
-  /* Indicate whether using url signature */
-  private _useUrlSignature: boolean = false;
-
-  public set useUrlSignature(value: boolean) {
-    this._useUrlSignature = value;
+  public setUseUrlSignature(value: boolean) {
+    this.useUrlSignature = value;
   }
 
-  public get useUrlSignature(): boolean {
-    return this._useUrlSignature;
+  public getUseUrlSignature(): boolean {
+    return this.useUrlSignature;
   }
 
-  /* Indicate whether using chunked encoding */
-  private _useChunkEncoding: boolean = false;
-
-  public set useChunkEncoding(value: boolean) {
-    this._useChunkEncoding = value;
+  public setUseChunkEncoding(value: boolean) {
+    this.useChunkEncoding = value;
   }
 
-  public get useChunkEncoding(): boolean {
-    return this._useChunkEncoding;
+  public getUseChunkEncoding(): boolean {
+    return this.useChunkEncoding;
   }
 
-  private _originalRequest: WebServiceRequest | undefined;
-
-  public set originalRequest(value: WebServiceRequest | undefined) {
-    this._originalRequest = value;
+  public setOriginalRequest(value: WebServiceRequest | undefined) {
+    this.originalRequest = value;
   }
 
-  public get originalRequest(): WebServiceRequest | undefined {
-    return this._originalRequest;
+  public getOriginalRequest(): WebServiceRequest | undefined {
+    return this.originalRequest;
   }
 
   public isRepeatable(): boolean {
-    return this.content === undefined || this.content.markSupported();
+    let content = this.getContent();
+    return !content || content.markSupported();
   }
 }

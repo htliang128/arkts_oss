@@ -17,26 +17,29 @@ import OSSException from '../common/exceptions/OSSException';
 import ResponseParser from '../common/parser/ResponseParser';
 import OSSSignerBase from './signer/OSSSignerBase';
 import { http } from '@kit.NetworkKit';
+import OSSErrorResponseHandler from './OSSErrorResponseHandler';
+import ResponseParsers from './ResponseParsers';
+import NoRetryStrategy from '../common/comm/NoRetryStrategy';
+import RequestHandler from '../common/comm/RequestHandler';
+import ResponseHandler from '../common/comm/ResponseHandler';
 
 export default abstract class OSSOperation {
   protected product: string;
-  protected region: string;
-  protected endpoint: uri.URI | null;
+  protected region?: string;
+  protected endpoint?: uri.URI;
   protected credsProvider: CredentialsProvider;
   protected client: ServiceClient;
-  protected cloudBoxId: string;
-  protected signVersion: SignVersion | null;
+  protected cloudBoxId?: string;
+  protected signVersion: SignVersion = SignVersion.V4;
   protected static errorResponseHandler = new OSSErrorResponseHandler();
-  protected static emptyResponseParser = new EmptyResponseParser();
-  protected static requestIdResponseParser = new RequestIdResponseParser();
+  protected static emptyResponseParser = new ResponseParsers.EmptyResponseParser();
+  protected static requestIdResponseParser = new ResponseParsers.RequestIdResponseParser();
   protected static noRetryStrategy = new NoRetryStrategy();
 
   protected constructor(client: ServiceClient, credsProvider: CredentialsProvider) {
     this.client = client;
     this.credsProvider = credsProvider;
     this.product = OSSConstants.PRODUCT_DEFAULT;
-    this.signVersion = null;
-    this.endpoint = null;
   }
 
   getProduct(): string {
@@ -47,7 +50,7 @@ export default abstract class OSSOperation {
     this.product = product;
   }
 
-  getRegion(): string {
+  getRegion(): string | undefined {
     return this.region;
   }
 
@@ -70,7 +73,7 @@ export default abstract class OSSOperation {
     this.endpoint = new uri.URI(endpoint.toString());
   }
 
-  getCloudBoxId(): string {
+  getCloudBoxId(): string | undefined {
     return this.cloudBoxId;
   }
 
@@ -158,7 +161,8 @@ export default abstract class OSSOperation {
       this.logException("Unable to parse response error: ", rpe);
       span?.setAttribute("alibaba.cloud.error.code", "ParseResponseError");
       throw oe;
-    } catch(e) {
+    }
+    catch(e) {
       if (e instanceof OSSException) {
         span?.setAttribute("alibaba.cloud.error.code", e.getErrorCode());
         span?.setAttribute("alibaba.cloud.request_id", e.getRequestId());

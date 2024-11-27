@@ -1,6 +1,7 @@
 import ClientErrorCode from "../../ClientErrorCode";
 import ClientException from "../../ClientException";
 import OSSErrorResult from "../../internal/model/OSSErrorResult";
+import OSSErrorCode from "../../OSSErrorCode";
 import OSSException from "../exceptions/OSSException";
 
 export default class ExceptionFactory {
@@ -77,8 +78,77 @@ export default class ExceptionFactory {
     return new ClientException(ex.message, errorCode, requestId, ex);
   }
 
-  public static  createOSSException( errorResult:OSSErrorResult,  rawResponseError:string) :OSSException{
-  return new OSSException(errorResult.Message, errorResult.Code, errorResult.RequestId, errorResult.HostId,
-  errorResult.Header, errorResult.ResourceType, errorResult.Method, rawResponseError, null, errorResult.EC);
-}
+  public static createInvalidResponseException(requestId: string | undefined, cause: Error): OSSException;
+
+  public static createInvalidResponseException(requestId: string | undefined,
+    message: string): OSSException;
+
+  public static createInvalidResponseException(requestId: string | undefined,
+    message: string | undefined, rawResponseError: string | undefined): OSSException;
+
+  public static createInvalidResponseException(requestId: string | undefined, rawResponseError: string | undefined,
+    cause: Error): OSSException;
+
+  public static createInvalidResponseException(requestId: string | undefined, arg2: string | Error | undefined,
+    arg3?: string | Error | undefined): OSSException {
+    let message = '';
+    let rawResponseError = '';
+    if (!arg3) {
+      if (typeof arg2 !== 'string') {
+        message = `\u8FD4\u56DE\u7ED3\u679C\u65E0\u6CD5\u6B63\u786E\u89E3\u6790\u3002 : "${arg2?.message}"`;
+      } else {
+        message = arg2;
+      }
+    } else {
+      if (typeof arg3 !== 'string') {
+        rawResponseError = arg2 as string;
+        message = `\u8FD4\u56DE\u7ED3\u679C\u65E0\u6CD5\u6B63\u786E\u89E3\u6790\u3002 : "${arg3?.message}"`;
+      } else {
+        message = arg2 as string;
+        rawResponseError = arg3;
+      }
+    }
+
+    return ExceptionFactory.createOSSException(requestId, OSSErrorCode.INVALID_RESPONSE, message, rawResponseError);
+  }
+
+
+  public static createOSSException(errorResult: OSSErrorResult): OSSException;
+
+  public static createOSSException(errorResult: OSSErrorResult, rawResponseError: string | undefined): OSSException
+
+  public static createOSSException(requestId: string | undefined, errorCode: string | undefined,
+    message: string): OSSException
+
+  public static createOSSException(requestId: string | undefined, errorCode: string | undefined,
+    message: string | undefined,
+    rawResponseError: string): OSSException
+
+
+  public static createOSSException(arg1: OSSErrorResult | string | undefined,
+    arg2?: string | undefined, arg3?: string | undefined, arg4?: string): OSSException {
+    if (!arg2) {
+      let errorResult = arg1 as OSSErrorResult;
+      return new OSSException(errorResult.Message, errorResult.Code, errorResult.RequestId, errorResult.HostId,
+        errorResult.Header, errorResult.ResourceType, errorResult.Method, undefined, undefined, errorResult.EC);
+    }
+    if (!arg3) {
+      let errorResult = arg1 as OSSErrorResult;
+      return new OSSException(errorResult.Message, errorResult.Code, errorResult.RequestId, errorResult.HostId,
+        errorResult.Header, errorResult.ResourceType, errorResult.Method, arg2, undefined, errorResult.EC);
+    }
+
+    let requestId = arg1 as string;
+    let errorCode = arg2 as string;
+    let message = arg3 as string;
+    let rawResponseError = arg4;
+
+    return new OSSException(message, errorCode, requestId, undefined, undefined, undefined, undefined,
+      rawResponseError);
+  }
+
+  public static createUnknownOSSException(requestId: string | undefined, statusCode: number): OSSException {
+    let message = `No body in response, http status code ${statusCode}`;
+    return new OSSException(message, ClientErrorCode.UNKNOWN, requestId, undefined, undefined, undefined, undefined);
+  }
 }

@@ -115,15 +115,15 @@ export class OSSUtils {
     throw new Error('Host name cannot be null.');
   }
 
-  static determineResourcePath(bucket: string, key: string, sldEnabled: boolean): string {
+  static determineResourcePath(bucket: string | undefined, key: string | undefined, sldEnabled: boolean): string {
     return sldEnabled ? OSSUtils.makeResourcePathWithBucket(bucket, key) : OSSUtils.makeResourcePathWithoutBucket(key);
   }
 
-  static makeResourcePathWithoutBucket(key: string): string {
+  static makeResourcePathWithoutBucket(key: string | undefined): string {
     return key ? OSSUtils.urlEncodeKey(key) : '';
   }
 
-  static makeResourcePathWithBucket(bucket: string, key: string): string {
+  static makeResourcePathWithBucket(bucket: string | undefined, key: string | undefined): string {
     return bucket ? `${bucket}/${key ? OSSUtils.urlEncodeKey(key) : ''}` : '';
   }
 

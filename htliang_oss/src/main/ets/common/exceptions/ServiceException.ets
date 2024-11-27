@@ -27,8 +27,8 @@ export default class ServiceException extends RuntimeException {
   constructor(errorMessage: string, errorCode: string, requestId: string, hostId: string, rawResponseError: string,
     cause: Error);
 
-  constructor(errorMessage: string, errorCode: string, requestId: string, hostId: string, rawResponseError: string,
-    cause: Error, ec: string);
+  constructor(errorMessage: string, errorCode: string, requestId: string, hostId: string,
+    rawResponseError: string | undefined, cause: Error | undefined, ec: string | undefined);
 
   constructor(arg1?: string | Error, arg2?: string | Error, arg3?: string, arg4?: string, arg5?: string | Error,
     arg6?: string | Error, arg7?: string) {

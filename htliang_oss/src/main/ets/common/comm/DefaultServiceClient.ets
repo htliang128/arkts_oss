@@ -68,7 +68,7 @@ export default class DefaultServiceClient extends ServiceClient {
 
     let responseBuf = httpResponse.result as ArrayBuffer;
     if (response.isSuccessful()) {
-      response.content = new ByteArrayInputStream(responseBuf);
+      response.setContent(new ByteArrayInputStream(responseBuf));
     } else {
       this.readAndSetErrorResponse(responseBuf, response);
     }
@@ -76,7 +76,7 @@ export default class DefaultServiceClient extends ServiceClient {
     let headerMap = new Map<string, string>(Object.entries(httpResponse.header));
     headerMap.forEach((value, key) => {
       if (HttpHeaders.CONTENT_LENGTH === key.toUpperCase()) {
-        response.contentLength = Number.parseInt(value);
+        response.setContentLength(Number.parseInt(value));
       }
       response.addHeader(key, value);
     });
@@ -86,7 +86,7 @@ export default class DefaultServiceClient extends ServiceClient {
 
   private readAndSetErrorResponse(responseBuf: ArrayBuffer, response: ResponseMessage) {
     response.setErrorResponseAsString(buffer.from(responseBuf).toString());
-    response.content = new ByteArrayInputStream(responseBuf);
+    response.setContent(new ByteArrayInputStream(responseBuf));
   }
 
   protected getDefaultRetryStrategy(): RetryStrategy {

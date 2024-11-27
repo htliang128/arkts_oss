@@ -1,45 +1,44 @@
-import { TreeMap } from '@kit.ArkTS';
 import InputStream from '@htliang/java_type/src/main/ets/java/io/InputStream';
+import { TreeMap } from '@kit.ArkTS';
 
 export default abstract class HttpMessage {
-  private _headers: TreeMap<string, string> = new TreeMap<string, string>();
+  private headers: TreeMap<string, string> = new TreeMap<string, string>();
+  private content?: InputStream;
+  private contentLength: number = 0;
 
-  public set headers(value: TreeMap<string, string>) {
-    this._headers = value;
+  public setHeaders(value: TreeMap<string, string>) {
+    this.headers = value;
   }
 
-  public get headers(): TreeMap<string, string> {
-    return this._headers;
-  }
-
-  private _content: InputStream | undefined;
-
-  public set content(value: InputStream | undefined) {
-    this._content = value;
-  }
-
-  public get content(): InputStream | undefined {
-    return this._content;
-  }
-
-  private _contentLength: number = 0;
-
-  public set contentLength(value: number) {
-    this._contentLength = value;
-  }
-
-  public get contentLength(): number {
-    return this._contentLength;
+  public getHeaders(): TreeMap<string, string> {
+    return this.headers;
   }
 
   public addHeader(key: string, value: string): void {
     this.headers.set(key, value);
   }
 
+  public setContent(value: InputStream | undefined) {
+    this.content = value;
+  }
+
+  public getContent(): InputStream | undefined {
+    return this.content;
+  }
+
+
+  public setContentLength(value: number) {
+    this.contentLength = value;
+  }
+
+  public getContentLength(): number {
+    return this.contentLength;
+  }
+
   close() {
-    if (this._content) {
-      this._content.close();
-      this._content = undefined;
+    if (this.content) {
+      this.content.close();
+      this.content = undefined;
     }
   }
 }

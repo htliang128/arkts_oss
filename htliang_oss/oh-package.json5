@@ -6,6 +6,7 @@
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
-    '@htliang/java_type': 'file:../java_type'
+    '@htliang/java_type': 'file:../java_type',
+    '@ohos/xml_js': '1.0.2'
   }
 }

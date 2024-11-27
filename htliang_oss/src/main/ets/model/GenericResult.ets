@@ -10,7 +10,7 @@ export default abstract class GenericResult {
     return this.requestId;
   }
 
-  setRequestId(requestId: string): void {
+  setRequestId(requestId: string | undefined): void {
     this.requestId = requestId;
   }
 
