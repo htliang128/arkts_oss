@@ -101,14 +101,6 @@ export class OSSUtils {
     return new uri.URI(combinedEndpoint);
   }
 
-  static determineInputStreamLength(inputStream: InputStream, hintLength: number): number {
-    if (hintLength <= 0 || !inputStream.markSupported()) {
-      return -1;
-    }
-
-    return hintLength;
-  }
-
   private static buildCanonicalHost(endpoint: uri.URI, bucket: string, clientConfig: ClientConfiguration): string {
     const host = endpoint.host;
     const isCname =
@@ -253,15 +245,18 @@ export class OSSUtils {
     }
   }
 
-  // static determineInputStreamLength(instream: InputStream, hintLength: number, useChunkEncoding?: boolean): number {
-  //   if (useChunkEncoding) {
-  //     return -1;
-  //   }
-  //   if (hintLength <= 0 || !instream.markSupported()) {
-  //     return -1;
-  //   }
-  //   return hintLength;
-  // }
+  static determineInputStreamLength(inputStream: InputStream, hintLength: number,
+    useChunkEncoding: boolean = false): number {
+    if (useChunkEncoding) {
+      return -1;
+    }
+
+    if (hintLength <= 0 || !inputStream.markSupported()) {
+      return -1;
+    }
+
+    return hintLength;
+  }
 
   static joinETags(eTags: string[]): string {
     return eTags.join(', ');
