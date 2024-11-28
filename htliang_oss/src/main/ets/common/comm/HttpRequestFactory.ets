@@ -15,16 +15,26 @@ export default class HttpRequestFactory {
       case http.RequestMethod.POST:
       case http.RequestMethod.PUT:
       case http.RequestMethod.DELETE:
-        let content = request.getContent();
-        if (content) {
-          httpRequestOptions.setExtraData(content.readAllBytes().buffer);
-        }
+        this.setupContent(request, httpRequestOptions);
     }
 
     httpRequestOptions.setMethod(method);
     httpRequestOptions.setExpectDataType(http.HttpDataType.ARRAY_BUFFER);
     this.configureRequestHeaders(request, context, httpRequestOptions);
     return httpRequestOptions;
+  }
+
+  private setupContent(request: Request, httpRequestOptions: HttpRequestOptionsBuilder) {
+    let content = request.getContent();
+    if (!content) {
+      return;
+    }
+    if (request.getContentLength() > 0) {
+      httpRequestOptions.setExtraData(content.readNBytes(request.getContentLength()).buffer);
+      return;
+    }
+
+    httpRequestOptions.setExtraData(content.readAllBytes().buffer);
   }
 
   private configureRequestHeaders(request: Request, context: ExecutionContext,

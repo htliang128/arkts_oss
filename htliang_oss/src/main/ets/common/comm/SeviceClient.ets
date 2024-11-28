@@ -175,6 +175,9 @@ export abstract class ServiceClient {
     }
 
     request.setHeaders(requestMessage.getHeaders());
+    request.setSendProgressCallBack(requestMessage.getOriginalRequest()?.getSendProgressCallBack());
+    request.setReceiveProgressCallBack(requestMessage.getOriginalRequest()?.getReceiveProgressCallback());
+
     // The header must be converted after the request is signed,
     // otherwise the signature will be incorrect.
     if (!request.getHeaders().isEmpty()) {
@@ -299,10 +302,28 @@ export abstract class ServiceClient {
 }
 
 export class Request extends HttpMessage {
+  private sendProgressCallBack?: Callback<http.DataSendProgressInfo>;
+  private receiveProgressCallback?: Callback<http.DataReceiveProgressInfo>;
   private uri: string = '';
   private method: http.RequestMethod = http.RequestMethod.POST;
   private useUrlSignature: boolean = false;
   private useChunkEncoding: boolean = false;
+
+  public getSendProgressCallBack(): Callback<http.DataSendProgressInfo> | undefined {
+    return this.sendProgressCallBack;
+  }
+
+  public setSendProgressCallBack(sendProgressCallback: Callback<http.DataSendProgressInfo> | undefined): void {
+    this.sendProgressCallBack = sendProgressCallback;
+  }
+
+  public getReceiveProgressCallback(): Callback<http.DataReceiveProgressInfo> | undefined {
+    return this.receiveProgressCallback;
+  }
+
+  public setReceiveProgressCallBack(receiveProgressCallback: Callback<http.DataReceiveProgressInfo> | undefined): void {
+    this.receiveProgressCallback = receiveProgressCallback;
+  }
 
   public getUri(): string {
     return this.uri;

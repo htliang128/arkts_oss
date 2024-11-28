@@ -88,6 +88,7 @@ export default class OSSObjectOperation extends OSSOperation {
         throw new Error("Please specify input stream or file to upload");
       }
 
+      metadata.setContentLength(originalInputStream.available());
       if (!metadata.getContentType()) {
         metadata.setContentType(Mimetypes.getInstance().getMimetype(key));
       }

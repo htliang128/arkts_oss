@@ -14,6 +14,7 @@ import RequestMessage from "./RequestMessage";
 import ExceptionFactory from "../utils/ExceptionFactory";
 import ClientErrorCode from "../../ClientErrorCode";
 import HttpErr from "../../internal/model/HttpErr";
+import LogUtils from "../utils/LogUtils";
 
 export default class DefaultServiceClient extends ServiceClient {
   protected static httpRequestFactory: HttpRequestFactory = new HttpRequestFactory();
@@ -47,18 +48,40 @@ export default class DefaultServiceClient extends ServiceClient {
     httpRequestOptionsBuilder.getHeader()?.set('User-Agent', this.requestConfig.getUserAgent());
     let uri = request.getUri();
 
-    let httpRequest: http.HttpRequest = http.createHttp();
-    let httpResponse: http.HttpResponse;
+    let httpRequest: http.HttpRequest = this.createHttpRequest(request);
+
     let httpRequestOption = httpRequestOptionsBuilder.build();
+    let httpResponse: http.HttpResponse;
     try {
       httpResponse = await httpRequest.request(uri, httpRequestOption);
     } catch (e) {
       throw ExceptionFactory.createNetworkException(e as HttpErr);
     } finally {
+      httpRequest.off('dataSendProgress', (info) => {
+        LogUtils.info(`httpRequest dataSendProgress end: ${info.sendSize}/${info.totalSize}`)
+      });
+      httpRequest.off('dataReceiveProgress', (info) => {
+        LogUtils.info(`httpRequest dataRecieveProgress end: ${info.receiveSize}/${info.totalSize}`)
+      });
       httpRequest.destroy();
     }
 
     return this.buildResponse(request, httpResponse);
+  }
+
+  private createHttpRequest(request: Request) {
+    let httpRequest: http.HttpRequest = http.createHttp();
+    let dataReceiveProgressCallBack = request.getReceiveProgressCallback();
+    if (dataReceiveProgressCallBack) {
+      httpRequest.on('dataReceiveProgress', dataReceiveProgressCallBack);
+    }
+
+    let dataSendProgressCallback = request.getSendProgressCallBack();
+    if (dataSendProgressCallback) {
+      httpRequest.on('dataSendProgress', dataSendProgressCallback);
+    }
+
+    return httpRequest;
   }
 
   private buildResponse(request: Request,
