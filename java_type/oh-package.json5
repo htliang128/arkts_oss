@@ -1,9 +1,9 @@
 {
   "name": "java_type",
-  "version": "1.0.0",
-  "description": "Please describe the basic information.",
+  "description": "A Java library implemented in TypeScript.",
   "main": "Index.ets",
-  "author": "",
+  "author": "Hongtao Liang",
   "license": "Apache-2.0",
-  "dependencies": {}
+  "version": "1.0.0",
+  "dependencies": {},
 }
