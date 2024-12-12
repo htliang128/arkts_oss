@@ -1,4 +1,7 @@
-import { Node } from "@kit.ArkGraphics3D";
+import Comment from "./Comment";
+import Element from "./Element";
+import Node from "./Node";
+import ProcessingInstruction from "./ProcessingInstruction";
 
 export default interface Branch extends Node {
   node(index: number): Node;

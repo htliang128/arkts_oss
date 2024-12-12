@@ -1,3 +1,8 @@
+import Element from "../Element";
+import QName from "../QName";
+import AbstractAttribute from "../tree/AbstractAttribute";
+import BeanAttributeList from "./BeanAttributeList";
+
 export default class BeanAttribute extends AbstractAttribute {
   private beanList: BeanAttributeList;
   private index: number;

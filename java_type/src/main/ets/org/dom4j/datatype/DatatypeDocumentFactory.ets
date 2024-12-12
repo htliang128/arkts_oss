@@ -1,3 +1,10 @@
+import Document from "../Document";
+import SAXReader from "../io/SAXReader";
+import Namespace from "../Namespace";
+import QName from "../QName";
+import InvalidSchemaException from "./InvalidSchemaException";
+import SchemaParser from "./SchemaParser";
+
 export default class DatatypeDocumentFactory extends DocumentFactory {
   private static singleton: DatatypeDocumentFactory = new DatatypeDocumentFactory();
 

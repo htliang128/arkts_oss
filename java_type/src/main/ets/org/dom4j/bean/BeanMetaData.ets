@@ -1,3 +1,8 @@
+import DocumentFactory from "../DocumentFactory";
+import QName from "../QName";
+import BeanAttributeList from "./BeanAttributeList";
+import BeanElement from "./BeanElement";
+
 export default class BeanMetaData {
   private static singletonCache: Map<any, BeanMetaData> = new Map<any, BeanMetaData>();
 

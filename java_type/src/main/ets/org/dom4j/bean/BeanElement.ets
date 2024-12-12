@@ -1,3 +1,6 @@
+import DocumentFactory from "../DocumentFactory";
+import DefaultElement from "../tree/DefaultElement";
+
 export default class BeanElement extends DefaultElement {
   private static DOCUMENT_FACTORY: DocumentFactory = BeanDocumentFactory.getInstance();
 

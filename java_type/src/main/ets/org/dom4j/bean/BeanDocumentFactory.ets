@@ -1,3 +1,7 @@
+import DocumentFactory from "../DocumentFactory";
+import Element from "../Element";
+import BeanElement from "./BeanElement";
+
 export default class BeanDocumentFactory extends DocumentFactory {
   private static singleton = new BeanDocumentFactory();
 

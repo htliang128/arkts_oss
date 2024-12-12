@@ -1,3 +1,7 @@
+import QName from "../QName";
+import DefaultAttribute from "../tree/DefaultAttribute";
+import DOMNodeHelper from "./DOMNodeHelper";
+
 export default class DOMAttribute extends DefaultAttribute implements Attr {
   constructor(qname: QName, value?: string, parent?: Element) {
     super(qname, value, parent);

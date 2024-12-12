@@ -1,4 +1,7 @@
+import Attribute from "../Attribute";
 import BeanAttribute from "./BeanAttribute";
+import BeanElement from "./BeanElement";
+import BeanMetaData from "./BeanMetaData";
 
 export default class BeanAttributeList extends Array<Attribute> {
   private parent: BeanElement;

@@ -1,3 +1,7 @@
+import Element from "../Element";
+import QName from "../QName";
+import AbstractAttribute from "../tree/AbstractAttribute";
+
 export default class DatatypeAttribute extends AbstractAttribute {
   private parent: Element | null;
 

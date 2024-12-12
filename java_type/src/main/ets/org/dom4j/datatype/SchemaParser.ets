@@ -1,3 +1,9 @@
+import Document from "../Document";
+import Namespace from "../Namespace";
+import QName from "../QName";
+import DatatypeDocumentFactory from "./DatatypeDocumentFactory";
+import InvalidSchemaException from "./InvalidSchemaException";
+
 export default class SchemaParser {
   private static readonly XSD_NAMESPACE: Namespace = Namespace.get("xsd", "http://www.w3.org/2001/XMLSchema");
 

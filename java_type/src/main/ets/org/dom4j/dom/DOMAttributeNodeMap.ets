@@ -1,3 +1,6 @@
+import DOMElement from "./DOMElement";
+import DOMNodeHelper from "./DOMNodeHelper";
+
 export default class DOMAttributeNodeMap implements NamedNodeMap {
   private element: DOMElement;
 

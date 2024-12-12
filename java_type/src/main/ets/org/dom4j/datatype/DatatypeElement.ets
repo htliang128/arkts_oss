@@ -1,3 +1,6 @@
+import QName from "../QName";
+import DefaultElement from "../tree/DefaultElement";
+
 export default class DatatypeElement extends DefaultElement {
   private datatype: XSDatatype;
 
