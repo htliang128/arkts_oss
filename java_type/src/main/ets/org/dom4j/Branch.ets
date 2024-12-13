@@ -2,6 +2,7 @@ import Comment from "./Comment";
 import Element from "./Element";
 import Node from "./Node";
 import ProcessingInstruction from "./ProcessingInstruction";
+import QName from "./QName";
 
 export default interface Branch extends Node {
   node(index: number): Node;

@@ -1,4 +1,11 @@
+import Attribute from "./Attribute";
 import Branch from "./Branch";
+import CDATA from "./CDATA";
+import Entity from "./Entity";
+import Namespace from "./Namespace";
+import Node from "./Node";
+import QName from "./QName";
+import Text from "./Text";
 
 export default interface Element extends Branch {
   getQName(): QName;
@@ -69,9 +76,9 @@ export default interface Element extends Branch {
 
   getStringValue(): string;
 
-  getData(): any;
+  getData(): ESObject;
 
-  setData(data: any): void;
+  setData(data: ESObject): void;
 
   attributes(): Attribute[];
 

@@ -1,3 +1,7 @@
+import Document from "./Document";
+import DocumentFactory from "./DocumentFactory";
+import Element from "./Element";
+
 export default  class DocumentHelper {
   private constructor() {}
 

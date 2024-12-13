@@ -1,4 +1,6 @@
+import Element from "../Element";
 import Node from "../Node";
+import DefaultNamespace from "../tree/DefaultNamespace";
 import DOMNodeHelper from "./DOMNodeHelper";
 
 export default class DOMNamespace extends DefaultNamespace implements Node {
@@ -113,7 +115,7 @@ export default class DOMNamespace extends DefaultNamespace implements Node {
     return null;
   }
 
-  compareDocumentPosition(other: Node): short {
+  compareDocumentPosition(other: Node): number {
     DOMNodeHelper.notSupported();
     return 0;
   }

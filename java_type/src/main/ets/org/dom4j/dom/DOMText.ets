@@ -1,5 +1,8 @@
 import Element from "../Element";
 import DOMNodeHelper from "./DOMNodeHelper";
+import Text from "../Text";
+import DefaultText from "../tree/DefaultText";
+import Node from "../Node";
 
 export default class DOMText extends DefaultText implements Text {
   constructor(text: string);

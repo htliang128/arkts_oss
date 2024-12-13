@@ -1,3 +1,5 @@
+import Namespace from "../Namespace";
+
 export default class NamespaceCache {
   protected static cache: Map<string, Map<string, WeakReference<Namespace>>> = new Map();
   protected static noPrefixCache: Map<string, WeakReference<Namespace>> = new Map();

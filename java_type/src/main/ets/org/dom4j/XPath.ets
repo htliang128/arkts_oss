@@ -1,28 +1,31 @@
 import NodeFilter from "./NodeFilter";
-import { Node } from "@kit.ArkGraphics3D";
+import NamespaceContext from "../jaxen/NamespaceContext";
+import VariableContext from "../jaxen/VariableContext";
+import FunctionContext from "../jaxen/FunctionContext";
+import Node from "./Node";
 
-export default  interface XPath extends NodeFilter {
+export default interface XPath extends NodeFilter {
   getText(): string;
 
   matches(var1: Node): boolean;
 
-  evaluate(var1: Object): Object;
+  evaluate(var1: ESObject): ESObject;
 
-  selectObject(var1: Object): Object;
+  selectESObject(var1: ESObject): ESObject;
 
-  selectNodes(var1: Object): Node[];
+  selectNodes(var1: ESObject): Node[];
 
-  selectNodes(var1: Object, var2: XPath): Node[];
+  selectNodes(var1: ESObject, var2: XPath): Node[];
 
-  selectNodes(var1: Object, var2: XPath, var3: boolean): Node[];
+  selectNodes(var1: ESObject, var2: XPath, var3: boolean): Node[];
 
-  selectSingleNode(var1: Object): Node;
+  selectSingleNode(var1: ESObject): Node;
 
-  valueOf(var1: Object): string;
+  valueOf(var1: ESObject): string;
 
-  numberValueOf(var1: Object): number;
+  numberValueOf(var1: ESObject): number;
 
-  booleanValueOf(var1: Object): boolean;
+  booleanValueOf(var1: ESObject): boolean;
 
   sort(var1: Node[]): void;
 

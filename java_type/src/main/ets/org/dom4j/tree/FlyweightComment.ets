@@ -1,3 +1,9 @@
+import Comment from "../Comment";
+import Element from "../Element";
+import Node from "../Node";
+import AbstractComment from "./AbstractComment";
+import DefaultComment from "./DefaultDocument";
+
 export default  class FlyweightComment extends AbstractComment implements Comment {
   protected text: string;
 

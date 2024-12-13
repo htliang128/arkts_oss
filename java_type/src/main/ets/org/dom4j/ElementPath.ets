@@ -1,3 +1,6 @@
+import Element from "./Element";
+import ElementHandler from "./ElementHandler";
+
 export default  interface ElementPath {
   size(): number;
 

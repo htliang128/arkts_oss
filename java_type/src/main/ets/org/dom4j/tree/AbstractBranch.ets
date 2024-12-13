@@ -1,3 +1,6 @@
+import Node from "../Node";
+import ContentListFacade from "./ContentListFacade";
+
 export default  abstract class AbstractBranch extends AbstractNode implements Branch {
   protected static DEFAULT_CONTENT_LIST_SIZE: number = 5;
 

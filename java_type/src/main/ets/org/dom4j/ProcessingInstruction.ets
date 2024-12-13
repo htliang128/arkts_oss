@@ -1,3 +1,5 @@
+import Node from "./Node";
+
 export default interface ProcessingInstruction extends Node {
   getTarget(): string;
   setTarget(var1: string): void;

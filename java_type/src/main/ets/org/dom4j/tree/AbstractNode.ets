@@ -1,4 +1,10 @@
+import Document from "../Document";
+import DocumentFactory from "../DocumentFactory";
 import Element from "../Element";
+import Node from "../Node";
+import NodeFilter from "../NodeFilter";
+import XPath from "../XPath";
+import { Pattern } from "@kit.IMEKit";
 
 export default  abstract class AbstractNode {
   private static NODE_TYPE_NAMES = [
@@ -112,19 +118,19 @@ export default  abstract class AbstractNode {
   }
 
   // XPath methods
-  selectObject(xpathExpression: string): any {
-    let xpath = this.createXPath(xpathExpression);
+  selectObject(xpathExpression: string): ESObject {
+    let xpath : XPath = this.createXPath(xpathExpression);
 
     return xpath.evaluate(this);
   }
 
-  selectNodes(xpathExpression: string): AbstractNode[] {
+  selectNodes(xpathExpression: string): Node[] {
     let xpath = this.createXPath(xpathExpression);
 
     return xpath.selectNodes(this);
   }
 
-  selectSingleNode(xpathExpression: string): AbstractNode | null {
+  selectSingleNode(xpathExpression: string): Node | null {
     let xpath = this.createXPath(xpathExpression);
 
     return xpath.selectSingleNode(this);

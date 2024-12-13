@@ -1,14 +1,17 @@
-export default  class IllegalAddException extends Error {
+import IllegalArgumentException from "../../java/lang/IllegalArgumentException";
+import Branch from "./Branch";
+import Node from "./Node";
+
+export default class IllegalAddException extends IllegalArgumentException {
   constructor(reason: string);
-  constructor(parent: Element, node: Node, reason: string);
+
   constructor(parent: Branch, node: Node, reason: string);
-  constructor(parentOrReason: Element | Branch | string, node?: Node, reason?: string) {
+
+  constructor(parentOrReason: Branch | string, node?: Node, reason?: string) {
     if (typeof parentOrReason === 'string') {
       super(parentOrReason);
-    } else if (parentOrReason instanceof Element) {
-      super(`The node "${node.toString()}" could not be added to the element "${parentOrReason.getQualifiedName()}" because: ${reason}`);
     } else {
-      super(`The node "${node.toString()}" could not be added to the branch "${parentOrReason.getName()}" because: ${reason}`);
+      super(`The node "${node?.toString()}" could not be added to the branch "${parentOrReason.getName()}" because: ${reason}`);
     }
   }
 }

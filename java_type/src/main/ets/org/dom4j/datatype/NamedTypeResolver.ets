@@ -1,3 +1,7 @@
+import DocumentFactory from "../DocumentFactory";
+import Element from "../Element";
+import QName from "../QName";
+
 export default class NamedTypeResolver {
   protected complexTypeMap: Map<QName, DocumentFactory> = new Map<QName, DocumentFactory>();
   protected simpleTypeMap: Map<QName, XSDatatype> = new Map<QName, XSDatatype>();

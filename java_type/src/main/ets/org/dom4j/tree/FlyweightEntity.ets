@@ -1,13 +1,15 @@
+import Element from "../Element";
+import Node from "../Node";
+import AbstractEntity from "./AbstractEntity";
+import DefaultEntity from "./DefaultEntity";
+
 export default  class FlyweightEntity extends AbstractEntity {
-  protected name: string;
-  protected text: string | null;
+  protected name?: string;
+  protected text?: string;
 
-  protected constructor() {
-    super();
-  }
-
+  public constructor();
   public constructor(name: string);
-  public constructor(name: string, text: string);
+  public constructor(name: string, text: string | undefined);
   public constructor(name?: string, text?: string) {
     super();
     if (name) {
@@ -18,11 +20,11 @@ export default  class FlyweightEntity extends AbstractEntity {
     }
   }
 
-  public getName(): string {
+  public getName(): string | undefined {
     return this.name;
   }
 
-  public getText(): string | null {
+  public getText(): string | undefined {
     return this.text;
   }
 

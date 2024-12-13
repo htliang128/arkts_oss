@@ -1,3 +1,9 @@
+import DocumentFactory from "../DocumentFactory";
+import Element from "../Element";
+import Node from "../Node";
+import QName from "../QName";
+import AbstractBranch from "./AbstractBranch";
+
 export default  abstract class AbstractElement extends AbstractBranch implements Element {
   private static readonly DOCUMENT_FACTORY = DocumentFactory.getInstance();
 

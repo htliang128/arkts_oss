@@ -1,4 +1,7 @@
-export default  class ContentListFacade<T extends Node> extends AbstractList<T> {
+import Node from "../Node";
+import AbstractBranch from "./AbstractBranch";
+
+export default  class ContentListFacade<T extends Node> extends Array<T> {
   private branchContent: Array<T>;
   private branch: AbstractBranch;
 

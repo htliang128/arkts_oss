@@ -1,3 +1,7 @@
+import Element from "../Element";
+import Entity from "../Entity";
+import AbstractNode from "./AbstractNode";
+
 export default  abstract class AbstractEntity extends AbstractNode implements Entity {
   constructor() {
     super();

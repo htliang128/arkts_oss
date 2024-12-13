@@ -1,3 +1,5 @@
+import AbstractElement from "./AbstractElement";
+
 export default  class DefaultElement extends AbstractElement {
   private static readonly DOCUMENT_FACTORY = DocumentFactory.getInstance();
   private qname: QName;

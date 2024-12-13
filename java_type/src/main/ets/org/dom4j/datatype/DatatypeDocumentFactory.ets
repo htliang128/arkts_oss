@@ -2,6 +2,7 @@ import Document from "../Document";
 import SAXReader from "../io/SAXReader";
 import Namespace from "../Namespace";
 import QName from "../QName";
+import DatatypeElementFactory from "./DatatypeElementFactory";
 import InvalidSchemaException from "./InvalidSchemaException";
 import SchemaParser from "./SchemaParser";
 

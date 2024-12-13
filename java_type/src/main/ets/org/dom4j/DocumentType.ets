@@ -1,3 +1,6 @@
+import Decl from "./dtd/Decl";
+import Node from "./Node";
+
 export default  interface DocumentType extends Node {
   getElementName(): string;
 

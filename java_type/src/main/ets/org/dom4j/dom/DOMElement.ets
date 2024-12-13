@@ -1,7 +1,9 @@
 import Element from "../Element";
 import Namespace from "../Namespace";
+import QName from "../QName";
 import DefaultElement from "../tree/DefaultElement";
 import DOMDocumentFactory from "./DOMDocumentFactory";
+import DOMNodeHelper from "./DOMNodeHelper";
 
 export default class DOMElement extends DefaultElement implements Element {
   private static readonly DOCUMENT_FACTORY = DOMDocumentFactory.getInstance();

@@ -1,13 +1,21 @@
-export default class XPathException extends Error {
+import RuntimeException from "../../java/lang/RuntimeException";
+
+export default class XPathException extends RuntimeException {
   private xpath: string;
 
-  constructor(xpath: string, reason?: string, e?: Error) {
-    if (reason) {
-      super(`Exception occurred evaluating XPath: ${xpath} ${reason}`);
-    } else if (e) {
-      super(`Exception occurred evaluating XPath: ${xpath}. Exception: ${e.message}`);
-    } else {
+  constructor(xpath: string);
+
+  constructor(xpath: string, reason: string);
+
+  constructor(xpath: string, e: Error);
+
+  constructor(xpath: string, arg?: string | Error) {
+    if (!arg) {
       super(`Exception occurred evaluating XPath: ${xpath}`);
+    } else if (typeof arg === 'string') {
+      super(`Exception occurred evaluating XPath: ${xpath} ${arg}`);
+    } else {
+      super(`Exception occurred evaluating XPath: ${xpath}. Exception: ${arg.message}`);
     }
     this.xpath = xpath;
   }

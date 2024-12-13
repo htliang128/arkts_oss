@@ -1,4 +1,5 @@
 import Attribute from "../Attribute";
+import QName from "../QName";
 import BeanAttribute from "./BeanAttribute";
 import BeanElement from "./BeanElement";
 import BeanMetaData from "./BeanMetaData";
@@ -50,11 +51,11 @@ export default class BeanAttributeList extends Array<Attribute> {
     return this.beanMetaData.getQName(index);
   }
 
-  getData(index: number): any {
+  getData(index: number): ESObject {
     return this.beanMetaData.getData(index, this.parent.getData());
   }
 
-  setData(index: number, data: any): void {
+  setData(index: number, data: ESObject): void {
     this.beanMetaData.setData(index, this.parent.getData(), data);
   }
 

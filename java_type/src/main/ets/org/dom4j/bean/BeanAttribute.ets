@@ -22,7 +22,7 @@ export default class BeanAttribute extends AbstractAttribute {
   }
 
   getValue(): string | null {
-    let data = this.getData();
+    let data:ESObject = this.getData();
 
     return data !== null ? data.toString() : null;
   }
@@ -31,11 +31,11 @@ export default class BeanAttribute extends AbstractAttribute {
     this.beanList.setData(this.index, data);
   }
 
-  getData(): any {
+  getData(): ESObject {
     return this.beanList.getData(this.index);
   }
 
-  setData(data: any): void {
+  setData(data: ESObject): void {
     this.beanList.setData(this.index, data);
   }
 }

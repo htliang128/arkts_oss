@@ -1,3 +1,4 @@
+import EntityResolver from "../xml/sax/EntityResolver";
 import Branch from "./Branch";
 import DocumentType from "./DocumentType";
 import Element from "./Element";

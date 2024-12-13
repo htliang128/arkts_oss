@@ -1,3 +1,10 @@
+import Element from "./Element";
+import QName from "./QName";
+import AbstractNode from "./tree/AbstractNode";
+import DefaultNamespace from "./tree/DefaultNamespace";
+import NamespaceCache from "./tree/NamespaceCache";
+import Visitor from "./Visitor";
+
 export default   class Namespace extends AbstractNode {
   protected static readonly CACHE = new NamespaceCache();
   public static readonly XML_NAMESPACE = Namespace.CACHE.get("xml", "http://www.w3.org/XML/1998/namespace");
@@ -5,7 +12,7 @@ export default   class Namespace extends AbstractNode {
 
   private prefix: string;
   private uri: string;
-  private hashCode: number = 0;
+  private hashCodeNum: number = 0;
 
   constructor(prefix: string, uri: string) {
     super();
@@ -16,12 +23,14 @@ export default   class Namespace extends AbstractNode {
     }
   }
 
-  public static get(prefix: string, uri: string): Namespace {
-    return Namespace.CACHE.get(prefix, uri);
-  }
+  public static get(uri: string): Namespace;
+  public static get(prefix: string, uri: string): Namespace;
+  public static get(arg1: string, arg2?: string): Namespace {
+    if (!arg2) {
+      return Namespace.CACHE.get(arg1);
+    }
 
-  public static get(uri: string): Namespace {
-    return Namespace.CACHE.get(uri);
+    return Namespace.CACHE.get(arg1, arg2);
   }
 
   public getNodeType(): number {
@@ -29,11 +38,11 @@ export default   class Namespace extends AbstractNode {
   }
 
   public hashCode(): number {
-    if (this.hashCode === 0) {
-      this.hashCode = this.createHashCode();
+    if (this.hashCodeNum === 0) {
+      this.hashCodeNum = this.createHashCode();
     }
 
-    return this.hashCode;
+    return this.hashCodeNum;
   }
 
   protected createHashCode(): number {
