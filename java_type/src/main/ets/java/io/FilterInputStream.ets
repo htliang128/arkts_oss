@@ -16,6 +16,14 @@ export default class FilterInputStream extends InputStream {
     return this.inputStream.readBytes(b, off, len);
   }
 
+  public readAllBytes(): Uint8Array {
+    return this.inputStream.readAllBytes();
+  }
+
+  public readNBytes(len: number): Uint8Array {
+    return this.inputStream.readNBytes(len);
+  }
+
   public skip(n: number): number {
     return this.inputStream.skip(n);
   }

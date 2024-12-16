@@ -14,20 +14,16 @@ export default class FileInputStream extends InputStream {
   private readLimitPosition: number = 0;
 
   constructor(path: string);
+
   constructor(file: fs.File);
+
   constructor(arg: string | fs.File) {
     super();
     if (typeof arg === 'string') {
       let path = arg;
-      if (!FileUtil.isFileExist(path)) {
-        throw new FileNotFoundException(`${path} is not a file or directory.`);
-      }
-      if (!FileUtil.isFile(path)) {
-        throw new FileNotFoundException(`${path} is not a file .`);
-      }
       this.file = fs.openSync(path, fs.OpenMode.READ_ONLY);
       this.fd = this.file.fd;
-      this.size = fs.statSync(path).size;
+      this.size = fs.statSync(this.fd).size;
       return;
     }
     this.file = arg;
@@ -49,6 +45,19 @@ export default class FileInputStream extends InputStream {
     return tmp[0];
   }
 
+  public readNBytes(len: number): Uint8Array {
+    if (len < 0) {
+      throw new Error("len < 0");
+    }
+
+    len = Math.min(this.available(), len);
+    let b = new Uint8Array(len);
+
+    let readSize = this.readBytes(b);
+    this.readPosition += readSize;
+    return b;
+  }
+
   public readBytes(b: Uint8Array, off: number = 0, len: number = b.length): number {
     if (len === 0 || this.readPosition >= this.size) {
       return -1;
@@ -60,12 +69,13 @@ export default class FileInputStream extends InputStream {
 
     let readLen = -1;
     try {
-      let tmpBuf = new Uint8Array(len);
-      let readLen = fs.readSync(this.fd, tmpBuf, {
+      let tmpBuf = new ArrayBuffer(len);
+      readLen = fs.readSync(this.fd, tmpBuf, {
         offset: this.readPosition, length: len
       });
       this.readPosition += readLen;
-      b.set(tmpBuf.slice(0, readLen), off);
+
+      b.set(new Uint8Array(tmpBuf).slice(0, readLen), off);
     } catch (e) {
       throw new IOException(`IOException: ${e}`)
     }

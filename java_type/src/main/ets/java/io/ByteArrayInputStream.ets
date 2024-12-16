@@ -54,6 +54,26 @@ export default class ByteArrayInputStream extends InputStream {
     return len;
   }
 
+  public readAllBytes(): Uint8Array {
+    return this.readNBytes(Number.MAX_SAFE_INTEGER);
+  }
+
+  public readNBytes(len: number): Uint8Array {
+    if (len < 0) {
+      throw new Error("len < 0");
+    }
+
+    len = Math.min(this.available(), len);
+    if (len === this.count) {
+      this.pos += len;
+      return this.buf;
+    }
+
+    let result = this.buf.slice(this.pos, this.pos + len);
+    this.pos += len;
+    return result;
+  }
+
   public skip(n: number): number {
     let k = this.count - this.pos;
     if (n < k) {
