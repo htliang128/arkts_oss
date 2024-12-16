@@ -9,13 +9,14 @@ import Throwable from '@htliang/java_type/src/main/ets/java/lang/Throwable';
 import fs from '@ohos.file.fs';
 import InputStream from '@htliang/java_type/src/main/ets/java/io/InputStream';
 import FileInputStream from '@htliang/java_type/src/main/ets/java/io/FileInputStream';
+import LogUtils from '../common/utils/LogUtils';
 
-export default class Test {
+export default class Self {
   static async putObject(data: Uint8Array | fs.File | string): Promise<void> {
     let region = DomainConstants.REGION_CN_GUANGZHOU;
     let endpoint = DomainConstants.PUBLIC_ENDPOINT_CN_GUANGZHOU;
     let bucketName = "xxx";
-    let objectName = `new${Date.now()}.txt`;
+    let objectName: string = Self.prepareObjectKey(data) ?? `new${Date.now()}.txt`;
     let credentialProvider = DefaultCredentialProvider.build("xxx", "xxx", "xxx");
 
     let ossClient = OSSClientBuilder.create()
@@ -25,7 +26,10 @@ export default class Test {
       .withRegion(region)
       .build();
 
-    let putObjectRequest = new PutObjectRequest(bucketName, objectName, Test.prepareInputStream(data));
+    let putObjectRequest = new PutObjectRequest(bucketName, objectName, Self.prepareInputStream(data));
+    putObjectRequest.setSendProgressCallBack((info) => {
+      LogUtils.info(`totalSize: ${info.totalSize}, sendSize: ${info.sendSize}`);
+    });
 
     ossClient.putObject(putObjectRequest).then((putObjectResult) => {
       console.log('putObject success, putObjectResult=', JSON.stringify(putObjectResult));
@@ -37,8 +41,21 @@ export default class Test {
     // try {
     //   let result = await ossClient.putObject(putObjectRequest);
     // } catch (e) {
-    //   console.error("putObject fail for ", JSON.stringify(e))
+    //   console.error("putObject fail for ", JSON.stringify(e));
     // }
+  }
+
+  static prepareObjectKey(data: Uint8Array | fs.File | string): string | undefined {
+    if (data instanceof Uint8Array) {
+      return undefined;
+    }
+    if (typeof data === 'string') {
+      let file = fs.openSync(data);
+      let name = file.name;
+      fs.closeSync(file.fd);
+      return name;
+    }
+    return data.name;
   }
 
   static prepareInputStream(data: Uint8Array | fs.File | string): InputStream {
