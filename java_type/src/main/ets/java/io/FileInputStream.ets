@@ -51,11 +51,10 @@ export default class FileInputStream extends InputStream {
     }
 
     len = Math.min(this.available(), len);
-    let b = new Uint8Array(len);
-
-    let readSize = this.readBytes(b);
+    let result = new Uint8Array(len);
+    let readSize = this.readBytes(result);
     this.readPosition += readSize;
-    return b;
+    return result;
   }
 
   public readBytes(b: Uint8Array, off: number = 0, len: number = b.length): number {
