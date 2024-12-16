@@ -1,4 +1,4 @@
-import Self from '@htliang/oss/src/main/ets/ex/Self';
+import Test from '@htliang/oss/src/main/ets/ex/Test';
 import { picker } from '@kit.CoreFileKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
@@ -14,7 +14,7 @@ struct Index {
       let documentPicker = new picker.DocumentViewPicker(getContext(this));
       documentPicker.select(documentSelectOptions).then((documentSelectResult: Array<string>) => {
         let uri = documentSelectResult[0];
-        Self.putObject(uri);
+        Test.putObject(uri);
       }).catch((err: BusinessError) => {
         console.error('DocumentViewPicker.select failed with err: ' + JSON.stringify(err));
       });
