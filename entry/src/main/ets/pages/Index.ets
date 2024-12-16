@@ -1,22 +1,35 @@
 import Test from '@htliang/oss/src/main/ets/ex/Test';
-import BinaryUtil from '@htliang/oss/src/main/ets/common/utils/BinaryUtil';
+import { picker } from '@kit.CoreFileKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 @Entry
 @Component
 struct Index {
   @State message: string = 'Hello World';
 
-  async xx() {
-    let txtContent= "现在时间是"+ new Date().toString();
-    await Test.putObject(BinaryUtil.getUtf8Array(txtContent));
+  async selectAndUpload() {
+    try {
+      let documentSelectOptions = new picker.DocumentSelectOptions();
+      documentSelectOptions.maxSelectNumber = 1;
+      let documentPicker = new picker.DocumentViewPicker(getContext(this));
+      documentPicker.select(documentSelectOptions).then((documentSelectResult: Array<string>) => {
+        let uri = documentSelectResult[0];
+        Test.putObject(uri);
+      }).catch((err: BusinessError) => {
+        console.error('DocumentViewPicker.select failed with err: ' + JSON.stringify(err));
+      });
+    } catch (error) {
+      let err: BusinessError = error as BusinessError;
+      console.error('DocumentViewPicker failed with err: ' + JSON.stringify(err));
+    }
   }
 
   build() {
     RelativeContainer() {
       Column() {
-        Button("ZGDds")
+        Button("选择文件以上传")
           .onClick(() => {
-            this.xx()
+            this.selectAndUpload()
           })
       }
       .alignItems(HorizontalAlign.Center)
