@@ -26,6 +26,19 @@ export default class CheckedInputStream extends FilterInputStream {
     return length;
   }
 
+  public readAllBytes(): Uint8Array {
+    return this.readNBytes(Number.MAX_SAFE_INTEGER);
+  }
+
+  public readNBytes(len: number): Uint8Array {
+    let result = this.inputStream.readNBytes(len);
+    if (result.length > 0 && result.length < 5 * 1024 * 1024) {
+      // 仅5M下文件校验CheckSum,否则容易闪退
+      this.cksum.updateBytes(result, 0, result.length);
+    }
+    return result;
+  }
+
   public skip(n: number): number {
     let buf = new Uint8Array(512);
     let total = 0;
